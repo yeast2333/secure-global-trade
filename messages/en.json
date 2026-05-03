@@ -1,0 +1,235 @@
+{
+  "promoBar": {
+    "shipping": "Free Shipping On All Orders Worldwide",
+    "encrypted": "End-to-end Encrypted Checkout",
+    "trusted": "Trusted by 32,000+ buyers across 50 countries",
+    "ssl": "SSL secured · GDPR ready"
+  },
+  "nav": {
+    "brand": "Secure Trade",
+    "home": "Home",
+    "products": "Products",
+    "security": "Security",
+    "securityCenter": "Security Center",
+    "securityLabBruteforce": "Lab: Rate limit",
+    "securityLabXss": "Lab: XSS block",
+    "securityLabPassword": "Lab: Auth failure",
+    "securityLabInjection": "Lab: Schema guard",
+    "search": "Search products...",
+    "searchAria": "Search products",
+    "cart": "Cart",
+    "login": "Sign in",
+    "logout": "Logout",
+    "profile": "Profile",
+    "orders": "Orders",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Language",
+    "currency": "Currency"
+  },
+  "home": {
+    "hero": {
+      "tagline": "B2B / Cross-border",
+      "title": "Source. Secure. Ship.",
+      "subtitle": "End-to-end encrypted catalog for global trade",
+      "welcomeBack": "Welcome back, {email}",
+      "cta": "Browse all products"
+    },
+    "collection": {
+      "title": "Collection: Products",
+      "showing": "Showing {start}-{end} of {total} products",
+      "empty": "No products match your filters.",
+      "searchResultsFor": "Search results for \"{query}\"",
+      "clearFilters": "Clear filters"
+    },
+    "loadingProducts": "Encrypted feed loading from secured database...",
+    "loadError": "Failed to load products",
+    "retry": "Retry"
+  },
+  "categories": {
+    "all": "All Products",
+    "electronics": "Electronics",
+    "home": "Home & Kitchen",
+    "industrial": "Industrial",
+    "ppe": "Safety & PPE",
+    "logistics": "Logistics"
+  },
+  "product": {
+    "addToCart": "Add to cart",
+    "quickAdd": "Quick add",
+    "buyNow": "Buy now",
+    "viewDetails": "View details",
+    "inStock": "{count} in stock",
+    "lowStock": "Only {count} left",
+    "outOfStock": "Out of stock",
+    "batch": "Batch",
+    "sale": "Sale",
+    "regularPrice": "Regular price",
+    "salePrice": "Sale price",
+    "save": "Save {percent}%",
+    "encryptedShipping": "Encrypted shipping data",
+    "description": "Description",
+    "specifications": "Specifications",
+    "shippingNote": "Free shipping worldwide. End-to-end encrypted tracking.",
+    "notFound": "Product not found",
+    "backToCatalog": "Back to catalog"
+  },
+  "cart": {
+    "title": "Your cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "shippingFree": "Free",
+    "total": "Total",
+    "checkout": "Check out",
+    "remove": "Remove",
+    "increase": "Increase quantity",
+    "decrease": "Decrease quantity",
+    "items": "{count, plural, =0 {0 items} =1 {1 item} other {# items}}",
+    "close": "Close cart"
+  },
+  "toast": {
+    "addedToCart": "Added to cart",
+    "loginSuccess": "Welcome back!",
+    "loginRequired": "Please sign in to continue",
+    "checkoutSuccess": "Order placed successfully",
+    "checkoutFailed": "Checkout failed",
+    "logoutSuccess": "Signed out",
+    "rateLimited": "Too many attempts. Try again in {seconds}s.",
+    "validationFailed": "Input rejected by validator",
+    "invalidCredentials": "Invalid email or password",
+    "authFailed": "Authentication failed",
+    "registerCheckEmail": "Account created. Check your inbox to confirm."
+  },
+  "login": {
+    "title": "Sign in",
+    "registerTitle": "Create account",
+    "subtitle": "Access your secure trade dashboard",
+    "registerSubtitle": "Join the Secure Trade buyer network",
+    "email": "Email address",
+    "password": "Password",
+    "submitLogin": "Sign in",
+    "submitRegister": "Create account",
+    "switchToRegister": "No account? Register",
+    "switchToLogin": "Already have one? Sign in",
+    "passwordHint": "At least 6 characters"
+  },
+  "profile": {
+    "title": "Profile",
+    "userId": "User ID",
+    "email": "Email",
+    "createdAt": "Member since",
+    "ordersTitle": "Order history",
+    "noOrders": "You have no orders yet.",
+    "orderId": "Order",
+    "orderTotal": "Total",
+    "orderDate": "Placed at",
+    "orderStatus": "Status"
+  },
+  "footer": {
+    "brand": {
+      "description": "Cross-border B2B marketplace with end-to-end encrypted checkout, RLS-protected order vault, and zero-trust API gateway.",
+      "compliance": "GDPR · ISO 27001 ready"
+    },
+    "shop": {
+      "title": "Shop",
+      "all": "All products"
+    },
+    "legal": {
+      "title": "Legal",
+      "security": "Security center"
+    },
+    "copyright": "© {year} Secure Trade. All rights reserved."
+  },
+  "security": {
+    "headline": "Security Operations Center",
+    "subhead": "Live dashboard plus four hands-on labs — each action hits real middleware, APIs, or edge rules.",
+    "lab": {
+      "title": "Interactive labs",
+      "subtitle": "Safe demonstrations: every action writes to the same security_logs stream as the cards above.",
+      "backHome": "Back to storefront",
+      "bruteforce": {
+        "heading": "Brute-force defense",
+        "body": "Sends six POST requests to /api/auth/login with invalid credentials. The first five are counted by the IP rate limiter; the sixth returns HTTP 429 and increments the Brute-force Attempt counter.",
+        "cta": "Run rate-limit demo",
+        "running": "Sending requests…",
+        "toastRateLimited": "429 received — rate limit and audit log fired.",
+        "toastFinished": "Last status {last}. If you already hit the limiter, open this page again after the window resets.",
+        "toastError": "Request failed — check the network console."
+      },
+      "xss": {
+        "heading": "XSS blocking",
+        "body": "Opens a new tab with a query string containing a script tag. Edge middleware rejects the navigation (403) and logs an XSS Attack event.",
+        "cta": "Open blocked probe URL",
+        "loadingLink": "Preparing probe URL…"
+      },
+      "password": {
+        "heading": "Password / bcrypt path",
+        "body": "Submits email + password to Supabase Auth via /api/auth/login. Wrong credentials return 401 and enqueue Auth Failure in security_logs (passwords are never stored in plaintext; hashing is handled server-side).",
+        "email": "Email",
+        "password": "Password",
+        "cta": "Try invalid sign-in",
+        "running": "Signing in…",
+        "hint": "Use an address that does not exist if you only want to see the auth failure audit.",
+        "toastAuthFailureLogged": "401 — invalid credentials logged as Auth Failure.",
+        "toastRateLimited": "429 — you are rate limited; wait and retry.",
+        "toastValidation": "422 — inputs failed Zod checks.",
+        "toastOther": "Unexpected status {code}.",
+        "toastError": "Network error."
+      },
+      "injection": {
+        "heading": "Injection prevention",
+        "body": "POSTs a hostile productId to /api/security/injection-lab. Only P-#### IDs pass; anything else yields HTTP 422 with a Schema Validation log entry.",
+        "field": "Raw product id",
+        "cta": "Submit hostile id",
+        "running": "Validating…",
+        "hint": "Try SQL fragments or wrong patterns, then attempt P-1001 to see a success path.",
+        "toastBlocked": "422 — Zod rejected the payload; Schema Validation logged.",
+        "toastAccepted": "200 — ID normalized and accepted.",
+        "toastError": "Error {code}",
+        "toastNetwork": "Network error."
+      }
+    },
+    "status": {
+      "headline": "Real-time module dashboard",
+      "subhead": "Each card shows only: live status · interception count · crypto strength (no charts).",
+      "labels": {
+        "status": "Status",
+        "blocked": "Blocked",
+        "strength": "Crypto strength"
+      },
+      "state": {
+        "connecting": "Connecting...",
+        "online": "Online",
+        "offline": "Offline"
+      },
+      "modules": {
+        "bruteforce": {
+          "title": "Brute-force defense",
+          "tagline": "middleware.ts · rate limiter",
+          "strength": "5 attempts / 60s · sliding-window per IP"
+        },
+        "xss": {
+          "title": "XSS protection",
+          "tagline": "Edge regex + Zod schemas",
+          "strength": "Edge keyword regex + per-route Zod allowlist"
+        },
+        "password": {
+          "title": "Password security",
+          "tagline": "Supabase Auth · bcrypt",
+          "strength": "Bcrypt hashing & verification hosted by Supabase GoTrue (see password-security docs)"
+        },
+        "injection": {
+          "title": "Injection prevention",
+          "tagline": "Parameterized queries + Zod",
+          "strength": "Supabase JS client only · 422s logged as Schema Validation · URL ids via Zod + parseInt"
+        }
+      },
+      "stale": "DB unreachable - showing last known counters.",
+      "lastSync": "Last sync",
+      "totals": "Total events captured",
+      "live": "Live · subscribed to security_logs"
+    }
+  }
+}

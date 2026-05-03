@@ -1,0 +1,235 @@
+{
+  "promoBar": {
+    "shipping": "全球免运费配送",
+    "encrypted": "端到端加密结算",
+    "trusted": "覆盖 50 国 32,000+ 买家信赖",
+    "ssl": "SSL 加密 · 符合 GDPR"
+  },
+  "nav": {
+    "brand": "Secure Trade",
+    "home": "首页",
+    "products": "商品中心",
+    "security": "安全中心",
+    "securityCenter": "安全总览",
+    "securityLabBruteforce": "实验：速率限制",
+    "securityLabXss": "实验：XSS 拦截",
+    "securityLabPassword": "实验：认证失败",
+    "securityLabInjection": "实验：模式校验",
+    "search": "搜索商品...",
+    "searchAria": "搜索商品",
+    "cart": "购物车",
+    "login": "登录",
+    "logout": "退出",
+    "profile": "个人中心",
+    "orders": "订单",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "language": "语言",
+    "currency": "币种"
+  },
+  "home": {
+    "hero": {
+      "tagline": "B2B / 跨境贸易",
+      "title": "采购 · 安全 · 出运",
+      "subtitle": "面向全球贸易的端到端加密目录",
+      "welcomeBack": "欢迎回来，{email}",
+      "cta": "浏览全部商品"
+    },
+    "collection": {
+      "title": "全部商品",
+      "showing": "显示 {start}-{end}（共 {total} 件）",
+      "empty": "没有匹配的商品。",
+      "searchResultsFor": "搜索 \"{query}\" 的结果",
+      "clearFilters": "清空筛选"
+    },
+    "loadingProducts": "正在从加密数据库读取商品...",
+    "loadError": "商品加载失败",
+    "retry": "重试"
+  },
+  "categories": {
+    "all": "全部商品",
+    "electronics": "电子电气",
+    "home": "家居厨卫",
+    "industrial": "工业工具",
+    "ppe": "劳保安全",
+    "logistics": "物流装载"
+  },
+  "product": {
+    "addToCart": "加入购物车",
+    "quickAdd": "快速加入",
+    "buyNow": "立即购买",
+    "viewDetails": "查看详情",
+    "inStock": "库存 {count}",
+    "lowStock": "仅剩 {count} 件",
+    "outOfStock": "已售罄",
+    "batch": "批次",
+    "sale": "促销",
+    "regularPrice": "原价",
+    "salePrice": "现价",
+    "save": "立省 {percent}%",
+    "encryptedShipping": "加密运输数据",
+    "description": "商品描述",
+    "specifications": "规格参数",
+    "shippingNote": "全球免运费配送，加密物流追踪。",
+    "notFound": "商品不存在",
+    "backToCatalog": "返回商品列表"
+  },
+  "cart": {
+    "title": "购物车",
+    "empty": "购物车是空的",
+    "continueShopping": "继续选购",
+    "subtotal": "小计",
+    "shipping": "运费",
+    "shippingFree": "免运费",
+    "total": "合计",
+    "checkout": "去结算",
+    "remove": "移除",
+    "increase": "增加数量",
+    "decrease": "减少数量",
+    "items": "{count, plural, =0 {0 件商品} =1 {1 件商品} other {# 件商品}}",
+    "close": "关闭购物车"
+  },
+  "toast": {
+    "addedToCart": "已加入购物车",
+    "loginSuccess": "登录成功",
+    "loginRequired": "请先登录以继续",
+    "checkoutSuccess": "下单成功",
+    "checkoutFailed": "结算失败",
+    "logoutSuccess": "已退出登录",
+    "rateLimited": "操作过于频繁，请在 {seconds} 秒后重试。",
+    "validationFailed": "输入未通过校验",
+    "invalidCredentials": "邮箱或密码不正确",
+    "authFailed": "认证失败",
+    "registerCheckEmail": "注册成功，请前往邮箱完成确认。"
+  },
+  "login": {
+    "title": "登录",
+    "registerTitle": "注册账号",
+    "subtitle": "访问您的安全贸易控制台",
+    "registerSubtitle": "加入 Secure Trade 买家网络",
+    "email": "邮箱",
+    "password": "密码",
+    "submitLogin": "登录",
+    "submitRegister": "注册",
+    "switchToRegister": "没有账号？立即注册",
+    "switchToLogin": "已有账号？去登录",
+    "passwordHint": "至少 6 位字符"
+  },
+  "profile": {
+    "title": "个人中心",
+    "userId": "用户 ID",
+    "email": "邮箱",
+    "createdAt": "注册时间",
+    "ordersTitle": "历史订单",
+    "noOrders": "您还没有订单。",
+    "orderId": "订单",
+    "orderTotal": "金额",
+    "orderDate": "下单时间",
+    "orderStatus": "状态"
+  },
+  "footer": {
+    "brand": {
+      "description": "面向跨境 B2B 的安全交易平台：端到端加密结算、RLS 行级保护订单、零信任 API 网关。",
+      "compliance": "GDPR · ISO 27001 就绪"
+    },
+    "shop": {
+      "title": "商品",
+      "all": "全部商品"
+    },
+    "legal": {
+      "title": "法律信息",
+      "security": "安全中心"
+    },
+    "copyright": "© {year} Secure Trade · 保留所有权利"
+  },
+  "security": {
+    "headline": "安全运营指挥中心",
+    "subhead": "实时看板 + 四个可动手实验，每项均触发真实的中间件、API 或边缘策略。",
+    "lab": {
+      "title": "交互实验区",
+      "subtitle": "安全演示：下列操作写入与上方卡片相同的 security_logs 审计流。",
+      "backHome": "返回商城首页",
+      "bruteforce": {
+        "heading": "暴力破解防御",
+        "body": "连续向 /api/auth/login 发送 6 次错误凭据 POST。前 5 次计入同一 IP 滑动窗口，第 6 次返回 HTTP 429，并写入 Brute-force Attempt 计数。",
+        "cta": "运行限流演示",
+        "running": "正在请求…",
+        "toastRateLimited": "已收到 429 — 限流与审计已触发。",
+        "toastFinished": "最后状态码 {last}。若此前已耗尽额度，请待时间窗重置后再试。",
+        "toastError": "请求失败，请查看网络面板。"
+      },
+      "xss": {
+        "heading": "XSS 拦截",
+        "body": "在新标签打开带 script 片段的查询串。边缘中间件拒绝导航（403），并记录 XSS Attack。",
+        "cta": "打开被拦截的探测链接",
+        "loadingLink": "正在生成探测 URL…"
+      },
+      "password": {
+        "heading": "密码 / bcrypt 链路",
+        "body": "通过 /api/auth/login 调用 Supabase Auth。错误凭据返回 401，并在 security_logs 写入 Auth Failure（口令仅由服务端 bcrypt 流程处理，不入库明文）。",
+        "email": "邮箱",
+        "password": "密码",
+        "cta": "尝试错误登录",
+        "running": "登录中…",
+        "hint": "若仅观察审计，可使用不存在的邮箱。",
+        "toastAuthFailureLogged": "401 — 已记录 Auth Failure。",
+        "toastRateLimited": "429 — 已被限流，请稍后再试。",
+        "toastValidation": "422 — 输入未通过 Zod。",
+        "toastOther": "非常规状态 {code}。",
+        "toastError": "网络错误。"
+      },
+      "injection": {
+        "heading": "注入预防",
+        "body": "向 /api/security/injection-lab POST 恶意 productId，只有通过 P-#### 规范化校验的 ID 会返回 200；其余返回 422 并记 Schema Validation。",
+        "field": "原始商品 ID",
+        "cta": "提交恶意 ID",
+        "running": "校验中…",
+        "hint": "可尝试 SQL 片段或错误格式，再试 P-1001 观察成功路径。",
+        "toastBlocked": "422 — Zod 拒绝；已记 Schema Validation。",
+        "toastAccepted": "200 — ID 已规范化并接受。",
+        "toastError": "错误 {code}",
+        "toastNetwork": "网络错误。"
+      }
+    },
+    "status": {
+      "headline": "实时模块看板",
+      "subhead": "每张卡片仅显示：实时状态 · 拦截次数 · 加密强度（无图表）。",
+      "labels": {
+        "status": "状态",
+        "blocked": "拦截次数",
+        "strength": "加密强度"
+      },
+      "state": {
+        "connecting": "连接中…",
+        "online": "在线",
+        "offline": "离线"
+      },
+      "modules": {
+        "bruteforce": {
+          "title": "暴力破解防御",
+          "tagline": "middleware.ts · 速率限制",
+          "strength": "60 秒 / 5 次 · 按 IP 滑动窗口"
+        },
+        "xss": {
+          "title": "XSS 防护",
+          "tagline": "边缘正则 + Zod 模式校验",
+          "strength": "边缘关键字正则 + 各路由 Zod 白名单"
+        },
+        "password": {
+          "title": "密码安全",
+          "tagline": "Supabase Auth · bcrypt",
+          "strength": "由 Supabase GoTrue 托管 bcrypt 哈希与校验 · 参见官方文档 password-security"
+        },
+        "injection": {
+          "title": "注入预防",
+          "tagline": "参数化查询 + Zod",
+          "strength": "仅使用 Supabase JS 客户端 · 422 记为 Schema Validation · URL ID 经 Zod + parseInt 规范化"
+        }
+      },
+      "stale": "数据库不可达，显示最近一次的计数器。",
+      "lastSync": "最近同步",
+      "totals": "累计捕获事件",
+      "live": "已订阅 security_logs"
+    }
+  }
+}

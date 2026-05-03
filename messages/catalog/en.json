@@ -1,0 +1,198 @@
+{
+  "P-1001": {
+    "name": "Industrial Safety Helmet",
+    "description": "ANSI Z89.1 certified hard hat with adjustable suspension and reflective decals."
+  },
+  "P-1002": {
+    "name": "Anti-static Gloves",
+    "description": "ESD-safe nylon gloves with carbon fibre weave for electronics assembly lines."
+  },
+  "P-1003": {
+    "name": "Secure RFID Door Lock",
+    "description": "13.56MHz RFID + PIN lock with audit log via encrypted BLE channel."
+  },
+  "P-1004": {
+    "name": "Heavy-duty Cargo Strap",
+    "description": "5000 lbs polyester ratchet strap, ideal for cross-border container logistics."
+  },
+  "P-1005": {
+    "name": "Industrial Inspection Camera",
+    "description": "1080p endoscope with IP67 housing and tamper-evident packaging."
+  },
+  "P-1006": {
+    "name": "High Visibility Vest",
+    "description": "Class 2 reflective vest, breathable mesh fabric."
+  },
+  "P-1007": {
+    "name": "Smart Door Bell 2K",
+    "description": "End-to-end encrypted video doorbell, supports HomeKit Secure Video."
+  },
+  "P-1008": {
+    "name": "Industrial Air Purifier",
+    "description": "HEPA H13 + activated carbon, suitable for warehouses up to 60 sqm."
+  },
+  "P-1009": {
+    "name": "Pallet Jack 2.5 Ton",
+    "description": "Steel pallet jack with polyurethane wheels, 2500 kg capacity."
+  },
+  "P-1010": {
+    "name": "Wireless Door Sensor",
+    "description": "Zigbee 3.0 magnetic sensor with AES-128 encryption and 2-year battery."
+  },
+  "P-1011": {
+    "name": "4K Conference Webcam Pro",
+    "description": "Sony sensor 4K@30fps webcam with hardware mute and 110 deg FOV."
+  },
+  "P-1012": {
+    "name": "Bluetooth 5.3 Earbuds",
+    "description": "ENC dual-mic, IPX5, hi-res audio. CE/FCC/RoHS certified for cross-border export."
+  },
+  "P-1013": {
+    "name": "65W GaN Travel Charger",
+    "description": "3-port USB-C/USB-A multi-region plug, supports PD3.0 / PPS, US-EU-UK-AU adapters."
+  },
+  "P-1014": {
+    "name": "Smart NVR 8CH PoE",
+    "description": "8-channel PoE NVR, supports 4K AI human/vehicle detection."
+  },
+  "P-1015": {
+    "name": "Bench Power Supply 0-30V",
+    "description": "Linear bench supply, 0-30V / 0-10A, 4-digit display, OVP/OCP protection."
+  },
+  "P-1016": {
+    "name": "USB-C Hub 9-in-1",
+    "description": "HDMI 4K@60Hz + 100W PD + Gigabit ethernet + SD/TF + 3xUSB-A."
+  },
+  "P-1017": {
+    "name": "Wireless Logistics Scanner",
+    "description": "1D/2D BT 5.0 wireless barcode scanner, 100m range, 2400mAh battery."
+  },
+  "P-1018": {
+    "name": "Stainless Coffee Brewer 1.8L",
+    "description": "Programmable drip brewer with thermal carafe; CE-certified for EU export."
+  },
+  "P-1019": {
+    "name": "360 Kitchen Sink Faucet",
+    "description": "Universal faucet extender, 360 deg rotation, 3 spray modes, fits 90% of taps."
+  },
+  "P-1020": {
+    "name": "LCD Digital Kitchen Scale",
+    "description": "Spoon-style scale, 0.1g precision, tare function, ideal for spices and coffee."
+  },
+  "P-1021": {
+    "name": "Robot Vacuum 4000Pa",
+    "description": "LDS lidar mapping, mop & sweep, 150min runtime, 4000Pa."
+  },
+  "P-1022": {
+    "name": "Smart Thermostat Wi-Fi",
+    "description": "Programmable Wi-Fi thermostat, supports Matter/HomeKit/Google."
+  },
+  "P-1023": {
+    "name": "Memory Foam Pillow Set",
+    "description": "Cervical-support pillows, certified OEKO-TEX, breathable cover, set of 2."
+  },
+  "P-1024": {
+    "name": "Adjustable LED Desk Lamp",
+    "description": "Eye-care LED lamp, 5 color temps, USB charging port, dimmable touch panel."
+  },
+  "P-1025": {
+    "name": "Mesh Wi-Fi 6 Tri-Band",
+    "description": "Whole-home AX1800 tri-band mesh Wi-Fi 6 system, covers 5500 sqft."
+  },
+  "P-1026": {
+    "name": "Hydraulic Cart 500kg",
+    "description": "Foot-pump hydraulic platform cart, 500kg load, 360 swivel casters."
+  },
+  "P-1027": {
+    "name": "Cordless Impact Wrench",
+    "description": "Brushless 1/2-inch impact wrench, 480Nm torque, 2x 4.0Ah batteries."
+  },
+  "P-1028": {
+    "name": "Laser Distance Meter 80m",
+    "description": "IP54 80m laser meter, 2mm accuracy, with bubble level and area/volume calc."
+  },
+  "P-1029": {
+    "name": "Air Compressor 50L",
+    "description": "Oil-free belt-drive compressor, 50L tank, 8 bar, 2.0 HP induction motor."
+  },
+  "P-1030": {
+    "name": "Heavy Bench Vise 6 inch",
+    "description": "Cast iron 6-inch bench vise, swivel base, anvil & pipe jaws."
+  },
+  "P-1031": {
+    "name": "Industrial Multimeter Pro",
+    "description": "True-RMS multimeter, CAT III 600V, NCV, capacitance, frequency, temperature."
+  },
+  "P-1032": {
+    "name": "Soldering Station Digital",
+    "description": "ESD-safe digital soldering station, 90W, 200-480 deg C, sleep mode auto-cooling."
+  },
+  "P-1033": {
+    "name": "Stainless Workbench 1.5m",
+    "description": "304 stainless workbench with under-shelf, ESD-safe surface."
+  },
+  "P-1034": {
+    "name": "Pneumatic Brad Nailer",
+    "description": "18-gauge pneumatic brad nailer, 5/8-2 inch range, 70-120psi."
+  },
+  "P-1035": {
+    "name": "N95 Respirator Box of 50",
+    "description": "NIOSH N95 respirator masks, 50 pieces / box, individually packed."
+  },
+  "P-1036": {
+    "name": "Cut-resistant Gloves",
+    "description": "ANSI A5 cut-resistant gloves with HPPE liner and PU coating."
+  },
+  "P-1037": {
+    "name": "Auto-darkening Welding Helmet",
+    "description": "Variable shade DIN 9-13, 1/1/1/2 optical clarity, grind mode, MIG/TIG/Stick."
+  },
+  "P-1038": {
+    "name": "Heavy-duty Knee Pads",
+    "description": "Gel-cushion knee pads with non-slip thermoplastic shell."
+  },
+  "P-1039": {
+    "name": "Earmuffs NRR 27dB",
+    "description": "Foldable earmuffs with NRR 27 dB rating, suitable for industrial sites."
+  },
+  "P-1040": {
+    "name": "Anti-fog Safety Goggles",
+    "description": "Anti-fog UV400 safety goggles, ANSI Z87.1+, fits over prescription eyewear."
+  },
+  "P-1041": {
+    "name": "Steel Toe Work Boots",
+    "description": "Waterproof leather work boots, steel toe, slip-resistant, ASTM compliant."
+  },
+  "P-1042": {
+    "name": "Stretch Film Wrap Roll",
+    "description": "20 inch x 1500 ft commercial-grade stretch wrap, 80 gauge."
+  },
+  "P-1043": {
+    "name": "Folding Logistics Cart",
+    "description": "Foldable 4-wheel platform cart, 200kg capacity, removable frame."
+  },
+  "P-1044": {
+    "name": "Forklift Tine Cap Set",
+    "description": "Set of 2 fork extension caps, 60-inch length, fits 6 inch forks."
+  },
+  "P-1045": {
+    "name": "Bubble Mailer 200 Pack",
+    "description": "Self-seal padded bubble mailers, water-resistant, 200 pcs / pack."
+  },
+  "P-1046": {
+    "name": "Manual Strapping Machine",
+    "description": "Manual PP strap tensioner + sealer combo for heavy-duty packing."
+  },
+  "P-1047": {
+    "name": "Pallet Wrap Dispenser",
+    "description": "Heavy-duty steel handle dispenser for stretch film, fits 18-20 inch rolls."
+  },
+  "P-1048": {
+    "name": "Heavy Duty Hand Truck",
+    "description": "300 kg capacity hand truck with stair climbers and pneumatic tires."
+  },
+  "P-1049": {
+    "name": "Cargo Net 2.5 x 4m",
+    "description": "Heavy-duty truck cargo net 2.5x4m with bungee perimeter."
+  }
+}
