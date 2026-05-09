@@ -47,16 +47,23 @@ export default function CartDrawer() {
           })),
         }),
       });
-      const json = await response.json();
+      const json = await response.json().catch(() => ({}));
       if (!response.ok || !json?.ok) {
-        throw new Error(json?.error ?? "checkout_failed");
+        const code =
+          typeof json?.error === "string" ? json.error : "checkout_failed";
+        throw new Error(code);
       }
       toast.success(tToast("checkoutSuccess"));
       clearCart();
       closeCart();
       router.push("/profile");
-    } catch {
-      toast.error(tToast("checkoutFailed"));
+    } catch (cause) {
+      const code = cause instanceof Error ? cause.message : "checkout_failed";
+      toast.error(
+        code !== "checkout_failed"
+          ? `${tToast("checkoutFailed")} (${code})`
+          : tToast("checkoutFailed"),
+      );
     }
   };
 

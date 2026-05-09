@@ -187,6 +187,15 @@ export default async function middleware(request: NextRequest) {
     return buildXssBlockedResponse(matched, safeDecode(targetUrl));
   }
 
+  // ============== Branch B2 · 结账 API（matcher 原先排除了通用 /api/*）
+  // Supabase SSR：须在命中路由处理器前刷新 access token，否则仅页面导航经过 middleware 时续签，
+  // POST /api/checkout 容易读到过期 JWT → getUser() 为空 → UNAUTHENTICATED。
+  if (url.pathname === "/api/checkout") {
+    const { supabase, response } = createSupabaseMiddlewareClient(request);
+    await supabase.auth.getUser();
+    return response;
+  }
+
   // 2) i18n 路由
   const intlResponse = intlMiddleware(request);
 
@@ -226,9 +235,10 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // 两条 matcher：一是页面路由（排除 _next/api/资源文件），二是登录类 API
+  // matcher：页面（排除 api/静态）、登录类 API、结账 API（需续签会话 Cookie）
   matcher: [
     "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
     "/api/auth/:path*",
+    "/api/checkout",
   ],
 };

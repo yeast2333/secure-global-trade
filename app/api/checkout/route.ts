@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createApiHandler } from "@/lib/api-handler";
-import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { createSupabaseAuthRouteClient } from "@/lib/supabase-server";
 import { productIdSchema } from "@/lib/product-id";
 
 // 安全技术点：
@@ -36,7 +36,9 @@ const schema = z.object({
 });
 
 export const POST = createApiHandler(schema, async (payload) => {
-  const supabase = await createSupabaseServerClient();
+  const { supabase, attachAuthCookies } =
+    await createSupabaseAuthRouteClient();
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -65,11 +67,15 @@ export const POST = createApiHandler(schema, async (payload) => {
 
   if (error) {
     console.error("[checkout] insert failed", error);
-    return NextResponse.json(
+    const res = NextResponse.json(
       { ok: false, error: "DB_INSERT_FAILED" },
       { status: 500 },
     );
+    attachAuthCookies(res);
+    return res;
   }
 
-  return NextResponse.json({ ok: true, orderId: data.id });
+  const res = NextResponse.json({ ok: true, orderId: data.id });
+  attachAuthCookies(res);
+  return res;
 });
