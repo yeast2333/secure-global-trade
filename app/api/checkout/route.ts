@@ -77,12 +77,20 @@ export const POST = createApiHandler(schema, async (payload) => {
 
   if (error) {
     console.error("[checkout] insert failed", error);
+    const e = error as {
+      message: string;
+      code?: string;
+      details?: string | null;
+      hint?: string | null;
+    };
     const res = NextResponse.json(
       {
         ok: false,
         error: "DB_INSERT_FAILED",
-        supabaseMessage: error.message,
-        supabaseCode: error.code,
+        supabaseMessage: e.message,
+        supabaseCode: e.code,
+        supabaseDetails: e.details ?? undefined,
+        supabaseHint: e.hint ?? undefined,
       },
       { status: 500 },
     );

@@ -12,6 +12,39 @@ import { Link, useRouter } from "@/i18n/navigation";
 import MoneyText from "@/components/MoneyText";
 import { getProductById } from "@/lib/products";
 
+function checkoutFailureDetail(json: Record<string, unknown>): string {
+  const base =
+    typeof json.error === "string" ? json.error : "checkout_failed";
+
+  if (base === "VALIDATION_FAILED" && Array.isArray(json.issues)) {
+    const first = json.issues[0] as
+      | { path?: string | string[]; message?: string }
+      | undefined;
+    const path =
+      typeof first?.path === "string"
+        ? first.path
+        : Array.isArray(first?.path)
+          ? first.path.join(".")
+          : "";
+    const msg = typeof first?.message === "string" ? first.message : "";
+    return `${base}${path ? `: ${path}` : ""}${msg ? ` — ${msg}` : ""}`.slice(
+      0,
+      400,
+    );
+  }
+
+  const parts = [
+    json.supabaseMessage,
+    json.supabaseDetails,
+    json.supabaseHint,
+  ].filter((x) => typeof x === "string" && x.length > 0) as string[];
+  if (parts.length > 0) {
+    return `${base}: ${parts.join(" · ")}`.slice(0, 400);
+  }
+
+  return base;
+}
+
 // 右侧滑出购物车抽屉
 //   - 商品图 / 名称 / 数量加减 / 移除
 //   - 小计 + 运费 + 合计（运费固定显示 Free，呼应 PromoBar 的 Free Shipping）
@@ -39,24 +72,28 @@ export default function CartDrawer() {
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map((item) => ({
-            id: item.id,
-            name: getProductById(item.id)?.name ?? item.name,
-            priceUsd: item.priceUsd,
-            quantity: item.quantity,
-          })),
+          items: items.map((item) => {
+            const qty = Math.floor(Number(item.quantity));
+            const quantity = Math.min(
+              999,
+              Math.max(1, Number.isFinite(qty) && qty > 0 ? qty : 1),
+            );
+            const priceUsd = Number(item.priceUsd);
+            return {
+              id: item.id,
+              name: getProductById(item.id)?.name ?? item.name,
+              priceUsd: Number.isFinite(priceUsd) ? priceUsd : 0,
+              quantity,
+            };
+          }),
         }),
       });
-      const json = await response.json().catch(() => ({}));
+      const json = (await response.json().catch(() => ({}))) as Record<
+        string,
+        unknown
+      >;
       if (!response.ok || !json?.ok) {
-        const base =
-          typeof json?.error === "string" ? json.error : "checkout_failed";
-        const hint =
-          typeof json?.supabaseMessage === "string" &&
-          json.supabaseMessage.length > 0
-            ? `: ${json.supabaseMessage.slice(0, 160)}`
-            : "";
-        throw new Error(`${base}${hint}`);
+        throw new Error(checkoutFailureDetail(json));
       }
       toast.success(tToast("checkoutSuccess"));
       clearCart();
