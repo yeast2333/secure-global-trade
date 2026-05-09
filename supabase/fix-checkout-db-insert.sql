@@ -1,9 +1,36 @@
 -- =============================================================
--- 若线上结账返回 DB_INSERT_FAILED，请在 Supabase Dashboard → SQL Editor
--- 以「一次性补丁」执行本脚本（幂等，可重复运行）。
--- 常见原因：orders 已建表且开了 RLS，但未向 authenticated 授予 INSERT/SELECT，
---         尤其 insert().select('id') 需要 SELECT 才能返回新行。
+-- 结账 DB_INSERT_FAILED 一站式补丁（Supabase → SQL Editor 执行，可重复运行）
+--
+-- 覆盖：(1) public.orders 不存在 (2) RLS 策略缺失 (3) authenticated 无 INSERT/SELECT
+--
+-- 若已在 Dashboard 建过同名表但结构不一致，请先备份后再执行；一般以新项目为准。
 -- =============================================================
+
+-- 表不存在时会创建（与仓库 init.sql 对齐）
+create table if not exists public.orders (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  items jsonb not null,
+  total_usd numeric(10, 2) not null,
+  status text not null default 'pending',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists orders_user_id_idx on public.orders (user_id);
+
+alter table public.orders enable row level security;
+
+drop policy if exists "orders selectable by owner" on public.orders;
+create policy "orders selectable by owner"
+  on public.orders
+  for select
+  using (auth.uid() = user_id);
+
+drop policy if exists "orders insertable by owner" on public.orders;
+create policy "orders insertable by owner"
+  on public.orders
+  for insert
+  with check (auth.uid() = user_id);
 
 grant usage on schema public to anon, authenticated;
 

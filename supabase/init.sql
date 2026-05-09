@@ -54,7 +54,7 @@ create policy "orders insertable by owner"
   with check (auth.uid() = user_id);
 
 -- 表级权限：RLS 只约束「能看到哪些行」，并不代替 GRANT。
--- 缺少 INSERT/SELECT 时 PostgREST 会 permission denied；带 .select('id') 的 insert 还需要 SELECT。
+-- 缺少 INSERT/SELECT 时 PostgREST 会 permission denied；insert 若带 RETURNING/.select() 还需 SELECT。
 grant usage on schema public to anon, authenticated;
 grant select on public.products to anon, authenticated;
 grant select, insert on public.orders to authenticated;

@@ -49,9 +49,14 @@ export default function CartDrawer() {
       });
       const json = await response.json().catch(() => ({}));
       if (!response.ok || !json?.ok) {
-        const code =
+        const base =
           typeof json?.error === "string" ? json.error : "checkout_failed";
-        throw new Error(code);
+        const hint =
+          typeof json?.supabaseMessage === "string" &&
+          json.supabaseMessage.length > 0
+            ? `: ${json.supabaseMessage.slice(0, 160)}`
+            : "";
+        throw new Error(`${base}${hint}`);
       }
       toast.success(tToast("checkoutSuccess"));
       clearCart();

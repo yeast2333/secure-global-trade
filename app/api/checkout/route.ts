@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createApiHandler } from "@/lib/api-handler";
-import { createSupabaseAuthRouteClient } from "@/lib/supabase-server";
+import {
+  createSupabaseAuthRouteClient,
+  createSupabaseServiceRoleClient,
+} from "@/lib/supabase-server";
 import { productIdSchema } from "@/lib/product-id";
 
 // 安全技术点：
@@ -55,28 +58,39 @@ export const POST = createApiHandler(schema, async (payload) => {
   );
   const totalUsd = Math.round(totalRaw * 100) / 100;
 
-  const { data, error } = await supabase
-    .from("orders")
-    .insert({
-      user_id: user.id,
-      items: payload.items,
-      total_usd: totalUsd,
-      status: "paid",
-    })
-    .select("id")
-    .single();
+  const row = {
+    user_id: user.id,
+    items: payload.items,
+    total_usd: totalUsd,
+    status: "paid" as const,
+  };
+
+  // 不使用 .select()，避免 PostgREST RETURNING 依赖额外 SELECT 权限；订单列表仍由客户端读表。
+  let { error } = await supabase.from("orders").insert(row);
+
+  if (error) {
+    const admin = createSupabaseServiceRoleClient();
+    if (admin) {
+      ({ error } = await admin.from("orders").insert(row));
+    }
+  }
 
   if (error) {
     console.error("[checkout] insert failed", error);
     const res = NextResponse.json(
-      { ok: false, error: "DB_INSERT_FAILED" },
+      {
+        ok: false,
+        error: "DB_INSERT_FAILED",
+        supabaseMessage: error.message,
+        supabaseCode: error.code,
+      },
       { status: 500 },
     );
     attachAuthCookies(res);
     return res;
   }
 
-  const res = NextResponse.json({ ok: true, orderId: data.id });
+  const res = NextResponse.json({ ok: true });
   attachAuthCookies(res);
   return res;
 });

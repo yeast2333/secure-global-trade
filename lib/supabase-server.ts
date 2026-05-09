@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import type { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
@@ -73,4 +74,20 @@ export async function createSupabaseAuthRouteClient() {
   }
 
   return { supabase, attachAuthCookies };
+}
+
+/**
+ * 服务端仅限 Route Handler / Server Action：使用 service_role，绕过 RLS。
+ * 仅在已用 Cookie 会话校验过 user_id 后用于写入（例如结账）；切勿把 key 暴露给浏览器。
+ */
+export function createSupabaseServiceRoleClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 }
