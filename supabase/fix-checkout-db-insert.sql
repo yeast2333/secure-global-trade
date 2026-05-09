@@ -24,8 +24,8 @@ alter table public.orders add column if not exists status text not null default 
 alter table public.orders add column if not exists created_at timestamptz not null default now();
 alter table public.orders add column if not exists user_id uuid references auth.users(id) on delete cascade;
 
--- 若早期版本的 orders 带有单列 product_id 且为 NOT NULL，会与当前结账「一行订单 + items JSON」冲突，
--- 报错示例：null value in column "product_id" violates not-null constraint
+-- 若早期版本的 orders 带有单列 product_id / quantity 等（NOT NULL），会与当前「一行订单 + items JSON」冲突。
+-- 报错示例：null value in column "product_id" / "quantity" violates not-null constraint
 do $$
 begin
   if exists (
@@ -36,6 +36,15 @@ begin
       and column_name = 'product_id'
   ) then
     execute 'alter table public.orders alter column product_id drop not null';
+  end if;
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'orders'
+      and column_name = 'quantity'
+  ) then
+    execute 'alter table public.orders alter column quantity drop not null';
   end if;
 end $$;
 
