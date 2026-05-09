@@ -16,7 +16,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase";
 // 安全模块 · 实时状态看板
 //   - 仅显示三项指标：在线/离线 · 拦截次数 · 当前加密强度
 //   - 数据来源：Supabase security_logs 表
-//   - 实时性：postgres_changes INSERT 订阅；新事件直接累加计数器
+//   - 实时性：postgres_changes INSERT 订阅；另设短周期轮询 + 页签可见时刷新，避免未加入 Realtime publication 时数字卡 0
 //   - 注入预防说明：所有查询走 Supabase Client `.eq("event_type", "...")`，
 //     永远不拼接 SQL；安全 100% 由参数化查询 + RLS 保证
 // =============================================================
@@ -125,6 +125,19 @@ export default function StatusDashboard() {
 
     loadCounts();
 
+    // Fallback: Realtime 未生效时，仍通过轮询保证拦截计数可见更新。
+    const pollId = window.setInterval(() => {
+      void loadCounts();
+    }, 6000);
+
+    // 用户切回当前页签时立即刷新，避免后台挂起导致数字滞后。
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        void loadCounts();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     const channel = supabase
       .channel("status_dashboard")
       .on(
@@ -153,6 +166,8 @@ export default function StatusDashboard() {
 
     return () => {
       cancelled = true;
+      window.clearInterval(pollId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       supabase.removeChannel(channel);
     };
   }, [supabase]);

@@ -38,8 +38,9 @@ function getSourceIp(request: NextRequest) {
   );
 }
 
-// 异步审计：刻意不 await 写入，避免阻塞 4xx 响应
-function fireAndForgetAudit(
+// 审计写入必须在返回响应之前 await 完成：Edge / Serverless 中间件返回后进程可能被冻结，
+// fire-and-forget 的 insert 往往来不及执行 → security_logs 无行 → 安全看板计数恒为 0。
+async function insertEdgeSecurityAudit(
   request: NextRequest,
   payload: {
     event_type: string;
@@ -50,27 +51,24 @@ function fireAndForgetAudit(
     source_ip: string;
   },
 ) {
-  const task = (async () => {
-    try {
-      const { supabase } = createSupabaseMiddlewareClient(request);
-      const { error } = await supabase.from("security_logs").insert({
-        event_type: payload.event_type,
-        attack_type: payload.attack_type,
-        payload: payload.target_url.slice(0, 500),
-        source_ip: payload.source_ip,
-        severity: payload.severity,
-        defense_level: "edge",
-        matched_rule: payload.matched_rule,
-        verdict: "blocked",
-      });
-      if (error) {
-        console.error("[security] audit insert failed", error.message);
-      }
-    } catch (cause) {
-      console.error("[security] audit task crashed", cause);
+  try {
+    const { supabase } = createSupabaseMiddlewareClient(request);
+    const { error } = await supabase.from("security_logs").insert({
+      event_type: payload.event_type,
+      attack_type: payload.attack_type,
+      payload: payload.target_url.slice(0, 500),
+      source_ip: payload.source_ip,
+      severity: payload.severity,
+      defense_level: "edge",
+      matched_rule: payload.matched_rule,
+      verdict: "blocked",
+    });
+    if (error) {
+      console.error("[security] audit insert failed", error.message);
     }
-  })();
-  task.catch(() => {});
+  } catch (cause) {
+    console.error("[security] audit insert crashed", cause);
+  }
 }
 
 // 安全模块 1 (续) · XSS 拦截响应页（深色品牌风）
@@ -99,7 +97,7 @@ function buildXssBlockedResponse(matched: string, targetUrl: string) {
 //   - 仅针对「修改态」登录接口：POST /api/auth/* （GET 不计入，避免浪费预算）
 //   - key = `auth:${ip}` 维度；超过 LOGIN_RATE_LIMIT.max 后返 429 + 写审计
 //   - 单实例 Map 计数；生产可替换为 Upstash Redis 共享存储
-function handleAuthRateLimit(request: NextRequest) {
+async function handleAuthRateLimit(request: NextRequest) {
   if (request.method !== "POST") {
     return NextResponse.next();
   }
@@ -109,7 +107,7 @@ function handleAuthRateLimit(request: NextRequest) {
   const result = consumeRateLimit(key, LOGIN_RATE_LIMIT);
 
   if (!result.allowed) {
-    fireAndForgetAudit(request, {
+    await insertEdgeSecurityAudit(request, {
       event_type: "Brute-force Attempt",
       attack_type: "Login rate limit exceeded",
       matched_rule: `${LOGIN_RATE_LIMIT.max} req / ${LOGIN_RATE_LIMIT.windowMs}ms`,
@@ -155,7 +153,7 @@ export default async function middleware(request: NextRequest) {
 
   // ============== Branch A · 登录类接口的暴力破解防御 ==============
   if (url.pathname.startsWith("/api/auth/")) {
-    return handleAuthRateLimit(request);
+    return await handleAuthRateLimit(request);
   }
 
   // ============== Branch B · 页面路由 ==============
@@ -170,7 +168,7 @@ export default async function middleware(request: NextRequest) {
       url: targetUrl,
       ip: sourceIp,
     });
-    fireAndForgetAudit(request, {
+    await insertEdgeSecurityAudit(request, {
       event_type: "XSS Attack",
       attack_type: /alert\s*\(/i.test(matched)
         ? "JS execution attempt"
