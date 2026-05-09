@@ -53,6 +53,12 @@ create policy "orders insertable by owner"
   for insert
   with check (auth.uid() = user_id);
 
+-- 表级权限：RLS 只约束「能看到哪些行」，并不代替 GRANT。
+-- 缺少 INSERT/SELECT 时 PostgREST 会 permission denied；带 .select('id') 的 insert 还需要 SELECT。
+grant usage on schema public to anon, authenticated;
+grant select on public.products to anon, authenticated;
+grant select, insert on public.orders to authenticated;
+
 -- =============================================================
 -- 安全审计 · security_logs 表
 --   - 由 middleware 的 fire-and-forget 写入：
@@ -100,6 +106,8 @@ create policy "security_logs are demo insertable"
   on public.security_logs
   for insert
   with check (true);
+
+grant select, insert on public.security_logs to anon, authenticated;
 
 -- 启用 Realtime：把表加入 supabase_realtime 发布通道
 do $$

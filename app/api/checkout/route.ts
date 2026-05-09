@@ -49,17 +49,18 @@ export const POST = createApiHandler(schema, async (payload) => {
     );
   }
 
-  const total = payload.items.reduce(
+  const totalRaw = payload.items.reduce(
     (sum, item) => sum + item.priceUsd * item.quantity,
     0,
   );
+  const totalUsd = Math.round(totalRaw * 100) / 100;
 
   const { data, error } = await supabase
     .from("orders")
     .insert({
       user_id: user.id,
       items: payload.items,
-      total_usd: total,
+      total_usd: totalUsd,
       status: "paid",
     })
     .select("id")
