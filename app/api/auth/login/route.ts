@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { createApiHandler } from "@/lib/api-handler";
-import { createSupabaseServerClient } from "@/lib/supabase-server";
+import {
+  createSupabaseAuthRouteClient,
+  createSupabaseServerClient,
+} from "@/lib/supabase-server";
 
 // =============================================================
 // 安全模块 3 · 密码安全（Supabase Auth + bcrypt）
-//   - GoTrue 默认使用 bcrypt 存储密码哈希（算法与轮次由 Supabase 托管升级）
-//   - 官方说明：https://supabase.com/docs/guides/auth/password-security
-//   - 客户端仅 POST 到本路由；middleware 对 /api/auth/* 做 IP 限流（防暴力破解）
-//   - Zod 校验邮箱/密码形态；失败返回 401 + INVALID_CREDENTIALS（防用户名枚举）
-//   - 失败事件异步写入 security_logs（event_type=Auth Failure）
+//   - 会话 Cookie 必须附加到 NextResponse（见 createSupabaseAuthRouteClient）
 // =============================================================
 const schema = z.object({
   email: z.string().trim().toLowerCase().email().max(120),
@@ -19,8 +17,29 @@ const schema = z.object({
 
 export const dynamic = "force-dynamic";
 
-export const POST = createApiHandler(schema, async (body, request) => {
-  const supabase = await createSupabaseServerClient();
+export async function POST(request: Request) {
+  let raw: unknown;
+  try {
+    raw = await request.json();
+  } catch {
+    return NextResponse.json({ ok: false, error: "INVALID_JSON" }, { status: 400 });
+  }
+
+  const parsed = schema.safeParse(raw);
+  if (!parsed.success) {
+    const issues = parsed.error.issues.map((issue) => ({
+      path: issue.path.join("."),
+      code: issue.code,
+      message: issue.message,
+    }));
+    return NextResponse.json(
+      { ok: false, error: "VALIDATION_FAILED", issues },
+      { status: 422 },
+    );
+  }
+
+  const body = parsed.data;
+  const { supabase, attachAuthCookies } = await createSupabaseAuthRouteClient();
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email: body.email,
@@ -35,13 +54,14 @@ export const POST = createApiHandler(schema, async (body, request) => {
     );
   }
 
-  return NextResponse.json({
+  const res = NextResponse.json({
     ok: true,
     user: { id: data.user.id, email: data.user.email },
   });
-});
+  attachAuthCookies(res);
+  return res;
+}
 
-// 异步写入 security_logs（不 await，避免影响 401 响应延迟）
 function queueAuthFailureLog(request: Request, email: string) {
   const sourceIp =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -71,7 +91,6 @@ function queueAuthFailureLog(request: Request, email: string) {
   task.catch(() => {});
 }
 
-// 简单脱敏：只保留首末字符，避免审计表中残留完整邮箱
 function maskEmail(email: string) {
   const [name, domain] = email.split("@");
   if (!domain) return "***";
