@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { ZodError, type ZodSchema } from "zod";
 
-import { queueSchemaValidationAudit } from "@/lib/validation-audit";
+import { recordSchemaValidationAudit } from "@/lib/validation-audit";
 
 // 安全技术点：统一 API 包装器
 //   1. 强制使用 zod 进行输入白名单校验，拒绝任何非法字段
 //   2. 错误响应永不泄露内部堆栈，只返回结构化的字段错误
 //   3. JSON 解析失败按 400 处理，避免 500 给攻击者反馈
-//   4. 422 时异步写入 security_logs（Schema Validation），支撑注入预防看板计数
+//   4. 422 时 await 写入 security_logs（Schema Validation），支撑注入预防看板计数（Serverless 须落库后再返回）
 export type ApiHandler<TBody> = (
   payload: TBody,
   request: Request,
@@ -36,7 +36,7 @@ export function createApiHandler<TBody>(
         code: issue.code,
         message: issue.message,
       }));
-      queueSchemaValidationAudit(request, issues);
+      await recordSchemaValidationAudit(request, issues);
       return NextResponse.json(
         {
           ok: false,

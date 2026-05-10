@@ -15,7 +15,11 @@ function getSourceIp(request: Request) {
   );
 }
 
-export function queueSchemaValidationAudit(request: Request, issues: IssueLite[]) {
+// Vercel / Serverless：响应返回后 runtime 常立即冻结，未 await 的 insert 往往永不落库。
+export async function recordSchemaValidationAudit(
+  request: Request,
+  issues: IssueLite[],
+) {
   const first = issues[0];
   if (!first) return;
 
@@ -26,25 +30,22 @@ export function queueSchemaValidationAudit(request: Request, issues: IssueLite[]
     /* ignore */
   }
 
-  const task = (async () => {
-    try {
-      const supabase = await createSupabaseServerClient();
-      const { error } = await supabase.from("security_logs").insert({
-        event_type: "Schema Validation",
-        attack_type: "Zod schema rejection (injection / type confusion)",
-        payload: `${pathname} · ${first.path}: ${first.code}`.slice(0, 500),
-        source_ip: getSourceIp(request),
-        severity: "low",
-        defense_level: "api",
-        matched_rule: first.path || "zod",
-        verdict: "blocked",
-      });
-      if (error) {
-        console.warn("[audit] schema validation log skipped", error.message);
-      }
-    } catch (cause) {
-      console.warn("[audit] schema validation task failed", cause);
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.from("security_logs").insert({
+      event_type: "Schema Validation",
+      attack_type: "Zod schema rejection (injection / type confusion)",
+      payload: `${pathname} · ${first.path}: ${first.code}`.slice(0, 500),
+      source_ip: getSourceIp(request),
+      severity: "low",
+      defense_level: "api",
+      matched_rule: first.path || "zod",
+      verdict: "blocked",
+    });
+    if (error) {
+      console.warn("[audit] schema validation log skipped", error.message);
     }
-  })();
-  task.catch(() => {});
+  } catch (cause) {
+    console.warn("[audit] schema validation audit failed", cause);
+  }
 }

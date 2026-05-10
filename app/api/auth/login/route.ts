@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   });
 
   if (error || !data.user) {
-    queueAuthFailureLog(request, body.email);
+    await recordAuthFailureAudit(request, body.email);
     return NextResponse.json(
       { ok: false, error: "INVALID_CREDENTIALS" },
       { status: 401 },
@@ -62,33 +62,30 @@ export async function POST(request: Request) {
   return res;
 }
 
-function queueAuthFailureLog(request: Request, email: string) {
+async function recordAuthFailureAudit(request: Request, email: string) {
   const sourceIp =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     request.headers.get("x-real-ip") ??
     "unknown";
 
-  const task = (async () => {
-    try {
-      const supabase = await createSupabaseServerClient();
-      const { error } = await supabase.from("security_logs").insert({
-        event_type: "Auth Failure",
-        attack_type: "Invalid credential attempt",
-        payload: `email=${maskEmail(email)}`,
-        source_ip: sourceIp,
-        severity: "low",
-        defense_level: "api",
-        matched_rule: "supabase.auth.signInWithPassword:invalid",
-        verdict: "denied",
-      });
-      if (error) {
-        console.error("[security] auth-failure audit failed", error.message);
-      }
-    } catch (cause) {
-      console.error("[security] auth-failure task crashed", cause);
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.from("security_logs").insert({
+      event_type: "Auth Failure",
+      attack_type: "Invalid credential attempt",
+      payload: `email=${maskEmail(email)}`,
+      source_ip: sourceIp,
+      severity: "low",
+      defense_level: "api",
+      matched_rule: "supabase.auth.signInWithPassword:invalid",
+      verdict: "denied",
+    });
+    if (error) {
+      console.error("[security] auth-failure audit failed", error.message);
     }
-  })();
-  task.catch(() => {});
+  } catch (cause) {
+    console.error("[security] auth-failure audit crashed", cause);
+  }
 }
 
 function maskEmail(email: string) {
