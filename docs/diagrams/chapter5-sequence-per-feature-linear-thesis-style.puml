@@ -1,0 +1,368 @@
+' =============================================================================
+' 毕业设计 · 单项功能时序图（论文模板风 · 兼容性修订版）
+' 修复要点：
+'   1) 禁止使用 ..> ，统一用 --> 返回/推送语义（diagrams.net 旧内核易报错）
+'   2) 禁止在 deactivate 后再从该生命线发消息
+'   3) 每个 @startuml 内自带 skinparam，便于单独复制整段粘贴
+' =============================================================================
+
+
+@startuml seq_biz_user_crossborder_profile
+skinparam monochrome true
+skinparam shadowing false
+skinparam handwritten false
+
+title 业务·用户及跨境档案（论文风序号时序）
+
+participant "买家\n终端用户" as U
+participant "注册登录视图\nAuth UI" as UI
+participant "身份与会话编排\nAuth服务" as A
+participant "个人主页与子资料\nProfile" as P
+participant "跨境地址簿与\n通关辅助信息\nAddressBook" as B
+
+U -> UI: 1. 录入邮箱口令·发起注册或登录
+activate UI
+UI -> A: 2. 提交凭证·请求会话令牌协商
+activate A
+A --> UI: 3. 返回鉴权裁决与安全Cookie占位说明
+deactivate A
+UI --> U: 4. 跳转已登录工作台视图
+deactivate UI
+
+U -> P: 5. 打开主页·加载多语种展示偏好
+activate P
+P --> U: 6. 下发脱敏摘要与可操作入口
+deactivate P
+
+U -> B: 7. 维护收货档案·勾选通关附录占位字段
+activate B
+B -> B: 8. MOQ与国别字段一致性复核
+
+B --> U: 9. 返回上一级资料清单
+deactivate B
+
+@enduml
+
+
+@startuml seq_biz_multicurrency_catalog
+skinparam monochrome true
+skinparam shadowing false
+
+title 业务·多币种展示与检索（论文风序号时序）
+
+participant "买家\n终端用户" as U
+participant "集合检索页\nCatalog SPA" as C
+participant "防抖输入节流\nDebouncer" as D
+participant "类目与模糊检索引擎\nSearch" as S
+participant "汇价快照服务\nFX快照" as F
+participant "商品图CDN\nWebP占位" as I
+
+U -> C: 1. 进入类目树或输入检索词
+activate C
+C -> D: 2. 汇聚连续键入·窗口内合并一次查询参数
+activate D
+D --> C: 3. 返回稳定查询串参数占位
+deactivate D
+
+C -> S: 4. 请求近似匹配与分页切片
+activate S
+S --> C: 5. 返回SKU候选集与命中统计摘要
+deactivate S
+
+C -> F: 6. 拉取展示币种换算句柄与时间戳占位
+activate F
+F --> C: 7. 返回时间戳锁定的展示价占位
+deactivate F
+
+C -> I: 8. 协商首屏外图片懒载入参
+activate I
+I --> C: 9. 渐进解码就绪占位信号
+deactivate I
+
+C --> U: 10. 刷新卡片栅格与价格脚注
+deactivate C
+
+@enduml
+
+
+@startuml seq_biz_smart_cart
+skinparam monochrome true
+skinparam shadowing false
+
+title 业务·智能购物车暂存（论文风序号时序）
+
+participant "买家\n终端用户" as U
+participant "购物车面板\nCart UI" as V
+participant "本地高速缓存\nLocalStorage" as L
+participant "云端购物篮占位\nTenant Basket" as BB
+participant "目录只读区\n库存与MOQ" as R
+
+U -> V: 1. 勾选SKU·调整行数量
+activate V
+V -> L: 2. 同步JSON快照至浏览器域
+activate L
+L --> V: 3. 确认本地持久化成功
+deactivate L
+
+V -> BB: 4. （若已登录）上行增量差分占位
+activate BB
+BB --> V: 5. 下行合并后的权威行项摘要
+deactivate BB
+
+V -> R: 6. 查询库存上界与起订量下界
+activate R
+R --> V: 7. 返回可售带与包装步长规则
+deactivate R
+
+V -> V: 8. 数量钳制占位·剔除零行
+
+V --> U: 9. 联动刷新小计与勾选状态
+deactivate V
+
+@enduml
+
+
+@startuml seq_biz_order_checkout_tx
+skinparam monochrome true
+skinparam shadowing false
+
+title 业务·订单生成与跨境结算（论文风序号时序）
+
+participant "买家\n终端用户" as U
+participant "订单确认页\nConfirm UI" as C
+participant "订单编排器\nCheckout" as CO
+participant "库存预留占位\nInventory" as I
+participant "事务型持久层\nRDBMS TX" as T
+
+U -> C: 1. 审阅购物车投影·发起缔约
+activate C
+C -> CO: 2. 封装幂等键·提交意向订单视图
+activate CO
+CO -> I: 3. 尝试库存预留或条件扣减占位
+activate I
+I --> CO: 4. 占位成功语义或冲突码占位
+deactivate I
+
+CO -> T: 5. 单笔事务写入订单头行与计税占位
+activate T
+T --> CO: 6. 提交语义或一致性回滚断点占位
+deactivate T
+
+CO --> C: 7. 返回订单主键与初始状态占位
+deactivate CO
+C --> U: 8. 渲染待付款或支付跳转控件占位
+deactivate C
+
+@enduml
+
+
+@startuml seq_biz_logistics_statemachine
+skinparam monochrome true
+skinparam shadowing false
+
+title 业务·物流追踪与状态机（论文风序号时序）
+
+participant "买家\n终端用户" as U
+participant "订单详情页\nOrderDetail" as D
+participant "状态机运行时占位\nOrder FSM" as F
+participant "跨境干线提要占位\nLogistics Adapter" as L
+
+U -> D: 1. 打开订单·请求当前履约切片视图
+activate D
+D -> F: 2. 读取合法迁移与当前离散态占位
+activate F
+F --> D: 3. 下发待付款、清关、干线等离散态摘要
+deactivate F
+
+D -> L: 4. 订阅承运与关务里程碑事件占位
+activate L
+L --> D: 5. 回流时间轴节点占位JSON
+deactivate L
+
+D --> U: 6. 可视化干线路书渲染占位
+deactivate D
+
+@enduml
+
+
+@startuml seq_sec_bruteforce_defense
+skinparam monochrome true
+skinparam shadowing false
+
+title SOC · 暴力破解防御（滑动窗口）（论文风序号时序）
+
+participant "客户端占位\nAuth Client" as CL
+participant "边缘网关占位\nMiddleware" as M
+participant "滑动令牌桶占位\nLimiter" as BK
+participant "安全审计信道占位\nAuditSink" as S
+participant "SOC速率计数占位\nSOC Panel" as K
+
+CL -> M: 1. POST登录路径·附带网络指纹占位语义
+activate M
+M -> BK: 2. 递减窗口令牌配额占位
+activate BK
+BK --> M: 3. 放行语义或超限与重试延时占位摘要
+deactivate BK
+
+alt 窗口耗尽占位（拦截语义）
+
+ M -> S: 4a. 写入爆破类超限事件占位
+
+ activate S
+ S --> M: 5a. ACK占位
+ S --> K: 5b. 推送SOC速率卡刻度占位
+ deactivate S
+
+ M --> CL: 6a. HTTP429占位与Retry占位头
+
+else 窗口仍有余量占位
+
+ M --> CL: 4b. 附带配额响应头占位·继续应用链
+
+end
+
+deactivate M
+
+@enduml
+
+
+@startuml seq_sec_xss_edge_waf
+skinparam monochrome true
+skinparam shadowing false
+
+title SOC · XSS防护监测（论文风序号时序）
+
+participant "访客占位\nBrowser" as CL
+participant "边缘解码正则占位\nXSSEngine" as W
+participant "403封堵页占位\nBlockPage" as P
+participant "审计落点占位\nAuditSink" as LA
+participant "SOC XSS占位\nSOC Panel" as X
+
+CL -> W: 1. GET携带可疑QueryString占位矢量
+activate W
+W -> W: 2. 多重解码后与脚本钩子模式匹配占位
+
+alt 矢量命中占位
+
+ W -> LA: 3a. 写入XSS阻断类摘要事件占位
+
+ activate LA
+ LA --> W: ACK占位
+ deactivate LA
+
+ W -> P: 4a. 组装no-store防缓存占位HTML
+
+ activate P
+ P --> W: 页面体就绪占位
+ deactivate P
+
+ W --> CL: 5a. HTTP403可读拒绝占位
+ W --> X: 5b. 推送SOC计数刷新占位语义
+
+else 矢量未命中占位
+
+ W --> CL: 6a. 放行至下级应用占位
+
+end
+
+deactivate W
+
+@enduml
+
+
+@startuml seq_sec_password_bcrypt_audit
+skinparam monochrome true
+skinparam shadowing false
+
+title SOC · 密码安全评估（慢哈希占位）（论文风序号时序）
+
+participant "终端用户占位\nBrowser" as U
+participant "登录路由占位\nLogin API" as F
+participant "载荷形态预审占位\nInput Gate" as Z
+participant "慢哈希核验占位\nHasher域" as H
+participant "失败遥测账本占位\nAuthFailure" as AU
+participant "SOC口令占位\nSOC Panel" as P
+
+U -> F: 1. 发起登录·邮箱与口令仅内存占位
+activate F
+F -> Z: 2. 预审邮箱形态与口令长度阈占位
+
+activate Z
+Z --> F: 3. 结构合法占位或预审拒绝占位
+deactivate Z
+
+F -> H: 4. 提交凭证摘要比对占位
+activate H
+H --> F: 5. 核验通过或口令错误占位语义
+
+alt 口令错误或凭证无效占位
+
+ F -> AU: 6a. 写入掩码邮箱失败遥测占位
+
+ activate AU
+ AU --> F: ACK占位
+ AU --> P: 6b. 推送口令安全卡刻度占位
+ deactivate AU
+
+ F --> U: 7a. HTTP401统一拒绝对外文案占位
+
+ deactivate H
+ deactivate F
+
+else 核验成功占位
+
+ F --> U: 8a. HTTP200与会话 Cookie 占位说明
+
+ deactivate H
+ deactivate F
+
+end
+
+@enduml
+
+
+@startuml seq_sec_schema_validation_injection
+skinparam monochrome true
+skinparam shadowing false
+
+title SOC · Schema强校验与注入预防占位（论文风序号时序）
+
+participant "API调用方占位\nCaller" as C
+participant "统一入口门面占位\nGate" as H
+participant "契约投影占位\nSchema" as Z
+participant "拒绝审计账本占位\nValidationLog" as V
+participant "业务处理核占位\nDomain" as DD
+participant "SOC注入预防卡占位\nSOC Panel" as S
+
+C -> H: 1. POST JSON占位·含商品订单键试探
+activate H
+H -> Z: 2. 白名单正则与类型投影占位演算
+
+activate Z
+Z --> H: 3. 契约通过占位体或违规项占位列表
+deactivate Z
+
+alt 违规项列表非空占位
+
+ H -> V: 4a. 写入契约拒绝占位剪影
+
+ activate V
+ V --> H: ACK占位
+ deactivate V
+
+ H --> S: 4c. SOC注入预防卡刻度加一占位语义
+ H --> C: 5a. HTTP422可读错误占位
+
+else 契约通过占位
+
+ H -> DD: 4b. 进入后续业务链路占位
+
+ activate DD
+ DD --> H: 5c. HTTP200业务占位体
+ deactivate DD
+
+end
+
+deactivate H
+
+@enduml

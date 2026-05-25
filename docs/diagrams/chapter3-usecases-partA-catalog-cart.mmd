@@ -1,0 +1,26 @@
+%% 图 3-1-a 商品目录与购物车用例（UC-01〜05）
+%% Word：mermaid.live 导出 PNG/SVG，插图宽度建议 8–10 cm
+
+%%{init: {'flowchart': {'htmlLabels': true}, 'theme': 'neutral'}}%%
+flowchart LR
+  subgraph A["参与者"]
+    G((访客))
+    R((注册用户))
+  end
+  subgraph S["系统边界 · 目录与购物车"]
+    UC01(["UC-01 浏览商品集合"])
+    UC02(["UC-02 关键字检索"])
+    UC03(["UC-03 类目筛选"])
+    UC04(["UC-04 查看商品详情"])
+    UC05(["UC-05 维护购物车"])
+  end
+  G --> UC01
+  G --> UC02
+  G --> UC03
+  G --> UC04
+  G --> UC05
+  R --> UC01
+  R --> UC02
+  R --> UC03
+  R --> UC04
+  R --> UC05

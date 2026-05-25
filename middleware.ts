@@ -43,7 +43,6 @@ function getSourceIp(request: NextRequest) {
 async function insertEdgeSecurityAudit(
   request: NextRequest,
   payload: {
-    event_type: string;
     attack_type: string;
     matched_rule: string;
     target_url: string;
@@ -54,14 +53,11 @@ async function insertEdgeSecurityAudit(
   try {
     const { supabase } = createSupabaseMiddlewareClient(request);
     const { error } = await supabase.from("security_logs").insert({
-      event_type: payload.event_type,
       attack_type: payload.attack_type,
       payload: payload.target_url.slice(0, 500),
-      source_ip: payload.source_ip,
+      client_ip: payload.source_ip,
+      action_taken: "blocked",
       severity: payload.severity,
-      defense_level: "edge",
-      matched_rule: payload.matched_rule,
-      verdict: "blocked",
     });
     if (error) {
       console.error("[security] audit insert failed", error.message);
@@ -108,8 +104,7 @@ async function handleAuthRateLimit(request: NextRequest) {
 
   if (!result.allowed) {
     await insertEdgeSecurityAudit(request, {
-      event_type: "Brute-force Attempt",
-      attack_type: "Login rate limit exceeded",
+      attack_type: "brute_force_attempt",
       matched_rule: `${LOGIN_RATE_LIMIT.max} req / ${LOGIN_RATE_LIMIT.windowMs}ms`,
       target_url: url.pathname,
       severity: "medium",
@@ -169,14 +164,7 @@ export default async function middleware(request: NextRequest) {
       ip: sourceIp,
     });
     await insertEdgeSecurityAudit(request, {
-      event_type: "XSS Attack",
-      attack_type: /alert\s*\(/i.test(matched)
-        ? "JS execution attempt"
-        : /javascript\s*:/i.test(matched)
-          ? "javascript: protocol"
-          : /on\w+\s*=/i.test(matched)
-            ? "Event handler injection"
-            : "Script tag injection",
+      attack_type: "xss_probe",
       matched_rule: matched,
       target_url: targetUrl,
       severity: "high",

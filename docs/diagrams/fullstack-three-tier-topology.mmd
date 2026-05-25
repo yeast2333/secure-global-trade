@@ -1,0 +1,18 @@
+%% Secure Global Trade — 全栈三层拓扑（精简版）
+
+flowchart TB
+  subgraph L1["第一层 · 表现层"]
+    A["Next.js 前端（React · i18n · Supabase 客户端）"]
+  end
+
+  subgraph L2["第二层 · 应用层"]
+    B["Middleware + /api<br/>边缘安全 · 认证/结账 · Zod"]
+  end
+
+  subgraph L3["第三层 · 数据层"]
+    C["Supabase<br/>PostgreSQL · Auth · RLS · REST/Realtime"]
+  end
+
+  A -->|HTTPS 经站点| B
+  B <-->|服务端调用| C
+  A -.->|按需直连| C

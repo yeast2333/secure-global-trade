@@ -1,0 +1,12 @@
+%% 图 3-1-b 账号注册与登录用例（UC-06、UC-07）
+%% 表 3-2 主动参与者为访客；图中仅连访客，注册用户可另文说明可再次登录。
+
+%%{init: {'flowchart': {'htmlLabels': true}, 'theme': 'neutral'}}%%
+flowchart LR
+  G((访客))
+  subgraph S["系统边界 · 身份"]
+    UC06(["UC-06 注册账号"])
+    UC07(["UC-07 登录"])
+  end
+  G --> UC06
+  G --> UC07

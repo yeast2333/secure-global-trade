@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import {
   createSupabaseAuthRouteClient,
+  createSupabaseServiceRoleClient,
   createSupabaseServerClient,
 } from "@/lib/supabase-server";
 
@@ -69,16 +70,13 @@ async function recordAuthFailureAudit(request: Request, email: string) {
     "unknown";
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabaseServiceRoleClient() ?? (await createSupabaseServerClient());
     const { error } = await supabase.from("security_logs").insert({
-      event_type: "Auth Failure",
-      attack_type: "Invalid credential attempt",
+      attack_type: "auth_failure_login",
       payload: `email=${maskEmail(email)}`,
-      source_ip: sourceIp,
+      client_ip: sourceIp,
+      action_taken: "denied",
       severity: "low",
-      defense_level: "api",
-      matched_rule: "supabase.auth.signInWithPassword:invalid",
-      verdict: "denied",
     });
     if (error) {
       console.error("[security] auth-failure audit failed", error.message);

@@ -17,7 +17,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase";
 //   - 仅显示三项指标：在线/离线 · 拦截次数 · 当前加密强度
 //   - 数据来源：Supabase security_logs 表
 //   - 实时性：postgres_changes INSERT 订阅；另设短周期轮询 + 页签可见时刷新，避免未加入 Realtime publication 时数字卡 0
-//   - 注入预防说明：所有查询走 Supabase Client `.eq("event_type", "...")`，
+//   - 注入预防说明：所有查询走 Supabase Client `.eq("attack_type", "...")`，
 //     永远不拼接 SQL；安全 100% 由参数化查询 + RLS 保证
 // =============================================================
 
@@ -29,7 +29,7 @@ type ModuleDefinition = {
   accent: string;
   ring: string;
   badge: string;
-  eventType: string;
+  attackType: string;
 };
 
 const MODULES: ModuleDefinition[] = [
@@ -39,7 +39,7 @@ const MODULES: ModuleDefinition[] = [
     accent: "from-amber-400/30 to-orange-500/10",
     ring: "ring-amber-400/40",
     badge: "bg-amber-500/15 text-amber-200 border-amber-400/30",
-    eventType: "Brute-force Attempt",
+    attackType: "brute_force_attempt",
   },
   {
     id: "xss",
@@ -47,7 +47,7 @@ const MODULES: ModuleDefinition[] = [
     accent: "from-rose-500/30 to-fuchsia-500/10",
     ring: "ring-rose-400/40",
     badge: "bg-rose-500/15 text-rose-200 border-rose-400/30",
-    eventType: "XSS Attack",
+    attackType: "xss_probe",
   },
   {
     id: "password",
@@ -55,7 +55,7 @@ const MODULES: ModuleDefinition[] = [
     accent: "from-cyan-400/30 to-sky-500/10",
     ring: "ring-cyan-400/40",
     badge: "bg-cyan-500/15 text-cyan-200 border-cyan-400/30",
-    eventType: "Auth Failure",
+    attackType: "auth_failure_login",
   },
   {
     id: "injection",
@@ -63,7 +63,7 @@ const MODULES: ModuleDefinition[] = [
     accent: "from-emerald-400/30 to-teal-500/10",
     ring: "ring-emerald-400/40",
     badge: "bg-emerald-500/15 text-emerald-200 border-emerald-400/30",
-    eventType: "Schema Validation",
+    attackType: "schema_validation_failed",
   },
 ];
 
@@ -76,6 +76,33 @@ const INITIAL_COUNTS: Counts = {
   password: 0,
   injection: 0,
 };
+
+const COUNTS_STORAGE_KEY = "security-dashboard-counts-v1";
+
+function readCachedCounts(): Counts {
+  if (typeof window === "undefined") return INITIAL_COUNTS;
+  try {
+    const raw = window.localStorage.getItem(COUNTS_STORAGE_KEY);
+    if (!raw) return INITIAL_COUNTS;
+    const parsed = JSON.parse(raw) as Partial<Counts>;
+    return {
+      bruteforce: parsed.bruteforce ?? 0,
+      xss: parsed.xss ?? 0,
+      password: parsed.password ?? 0,
+      injection: parsed.injection ?? 0,
+    };
+  } catch {
+    return INITIAL_COUNTS;
+  }
+}
+
+function saveCachedCounts(counts: Counts) {
+  try {
+    window.localStorage.setItem(COUNTS_STORAGE_KEY, JSON.stringify(counts));
+  } catch {
+    // ignore cache write failures
+  }
+}
 
 export default function StatusDashboard() {
   const t = useTranslations("security.status");
@@ -97,7 +124,7 @@ export default function StatusDashboard() {
             supabase
               .from("security_logs")
               .select("*", { count: "exact", head: true })
-              .eq("event_type", m.eventType),
+              .eq("attack_type", m.attackType),
           ),
         );
 
@@ -116,13 +143,18 @@ export default function StatusDashboard() {
         }
 
         setCounts(next);
+        saveCachedCounts(next);
         setState(hadError ? "offline" : "online");
       } catch (cause) {
         console.error("[status-dashboard] load failed", cause);
-        if (!cancelled) setState("offline");
+        if (!cancelled) {
+          setCounts(readCachedCounts());
+          setState("offline");
+        }
       }
     };
 
+    setCounts(readCachedCounts());
     loadCounts();
 
     // Fallback: Realtime 未生效时，仍通过轮询保证拦截计数可见更新。
@@ -144,8 +176,8 @@ export default function StatusDashboard() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "security_logs" },
         (payload) => {
-          const row = payload.new as { event_type?: string };
-          const target = MODULES.find((m) => m.eventType === row.event_type);
+          const row = payload.new as { attack_type?: string };
+          const target = MODULES.find((m) => m.attackType === row.attack_type);
           if (!target) return;
           setCounts((prev) => ({ ...prev, [target.id]: prev[target.id] + 1 }));
           // 触发该卡片的脉冲高亮

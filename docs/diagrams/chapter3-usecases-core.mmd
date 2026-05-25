@@ -1,0 +1,49 @@
+%% 第三章 · 图 3-1 核心用例图（访客 / 注册用户）
+%% Word：复制到 https://mermaid.live 导出 PNG（建议 120%–180%）或 SVG 后插入
+
+%%{init: {'flowchart': {'htmlLabels': true, 'curve': 'basis'}, 'theme': 'neutral'}}%%
+flowchart TB
+  subgraph ACT["参与者"]
+    direction LR
+    G((访客))
+    R((注册用户))
+  end
+
+  subgraph SYS["〈系统边界〉Secure Global Trade<br/>跨境 B2B 目录展销与安全演示"]
+    direction TB
+
+    UC01(["UC-01 浏览商品集合"])
+    UC02(["UC-02 关键字检索"])
+    UC03(["UC-03 类目筛选"])
+    UC04(["UC-04 查看商品详情"])
+    UC05(["UC-05 维护购物车"])
+
+    UC06(["UC-06 注册账号"])
+    UC07(["UC-07 登录"])
+
+    UC08(["UC-08 查看个人订单"])
+    UC09(["UC-09 结账生成订单"])
+
+    UC10(["UC-10 访问安全中心"])
+    UC11(["UC-11 触发速率限制演示"])
+  end
+
+  G --> UC01
+  G --> UC02
+  G --> UC03
+  G --> UC04
+  G --> UC05
+  G --> UC06
+  G --> UC07
+  G --> UC10
+  G --> UC11
+
+  R --> UC01
+  R --> UC02
+  R --> UC03
+  R --> UC04
+  R --> UC05
+  R --> UC08
+  R --> UC09
+  R --> UC10
+  R --> UC11

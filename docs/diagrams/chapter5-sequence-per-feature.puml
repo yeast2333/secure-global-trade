@@ -1,0 +1,322 @@
+'
+' ============================================================================
+' 毕业设计 · 单项功能 · 序号时序图（PlantUML）
+' 规范：单色；矩形参与者；消息「序号. 中文说明」；实线→调用、虚线-->返回；
+' diagrams.net ：调整图形 → 插入 → Advanced → PlantUML → 粘贴任一 @startuml…@enduml 整块
+'
+' 工程对齐：Secure Global Trade（Next.js Middleware + ApiHandler + CartProvider + Checkout）
+' ============================================================================
+
+@startuml seq_feature_search
+skinparam monochrome true
+skinparam shadowing false
+
+title 商品检索 · 序号时序（工程实现对齐）
+
+participant "访客\n或买家" as User
+participant "集合页视图\nTradeHome" as Page
+participant "URL\nSearchParams" as Url
+participant "目录快照\nlib/products" as Cat
+participant "卡片\nnext/image" as Img
+
+User -> Page: 1. 输入检索词「q」与/或类目「category」
+activate Page
+
+Page -> Url: 2. （设计中）防抖后同步 QueryString(q,category,page)
+
+Url --> Page: 3. 回传分页与路由变化结果
+
+Page -> Cat: 4. 子串近似匹配中英文案字段
+
+Cat --> Page: 5. 返回筛选分页切片
+
+Page -> Img: 6. 懒加载占位 + sizes 解码策略
+
+Img --> Page: 7. 异步就绪（CDN 可协商 WebP/AVIF）
+
+Page --> User: 8. 刷新网格与分页控件
+deactivate Page
+
+@enduml
+
+
+@startuml seq_feature_cart
+skinparam monochrome true
+skinparam shadowing false
+
+title 购物车 · 序号时序（工程实现对齐）
+
+participant "买家" as Buyer
+participant "购物车上下文\nCartProvider" as Cart
+participant "localStorage\nsgt-cart" as LS
+
+Buyer -> Cart: 1. 加购 addToCart 或更改数量 remove/update
+activate Cart
+
+Cart -> LS: 2. 首次Hydration读取JSON（若损坏则忽略）
+
+LS --> Cart: 3. 反序列化为 items 数组
+
+Cart -> Cart: 4. 数量 clamp 为非负 · 数量为0则从数组剔除
+
+Cart -> LS: 5. Hydrated 后写回整包 JSON（跨刷新一致）
+
+Cart --> Buyer: 6. 回馈小计/件数，刷新抽屉视图
+deactivate Cart
+
+@enduml
+
+
+@startuml seq_feature_checkout
+skinparam monochrome true
+skinparam shadowing false
+
+title 订单结算 · 序号时序（工程实现对齐）
+
+participant "浏览器" as Br
+participant "API门面\ncreateApiHandler" as Gate
+participant "结账POST\napi/checkout" as Co
+participant "会话服务\nSupabase Auth" as Auth
+participant "订单表RLS\nPostgreSQL" as DB
+
+Br -> Gate: 1. 提交购物车JSON序列化载荷
+activate Gate
+
+Gate -> Gate: 2. Zod safeParse · 字段白名单与数值界限
+
+Gate -> Co: 3. 派发已解析 payloads
+activate Co
+
+note right of Gate
+校验失败时在步骤2后直接返回：
+HTTP 422 VALIDATION_FAILED
+end note
+
+Co -> Auth: 4. getUser()读取会话归属
+activate Auth
+
+Auth --> Co: 5. 返回 user.id · 或无会话401
+
+deactivate Auth
+
+Co -> Co: 6. 服务端重算 total_usd 防篡改小数
+
+Co -> DB: 7. 参数化单行 INSERT （user_id取自会话）
+
+DB --> Co: 8. 成功或无 RETURNING权限类错误码
+
+Co --> Gate: 9. 附加 Set-Cookie 并返回结算JSON
+
+deactivate Co
+
+Gate --> Br: 10. HTTP 422/401/200/500 统一语义
+deactivate Gate
+
+@enduml
+
+
+@startuml seq_feature_bruteforce
+skinparam monochrome true
+skinparam shadowing false
+
+title 暴力破解防御 · 令牌桶限速 · 序号时序（工程实现对齐）
+
+participant "访客" as G
+participant "Edge Middleware\n登录路径" as M
+participant "速率桶 Map\nrouteTag:IP" as B
+participant "登录路由\napi/auth/login" as L
+
+G -> M: 1. POST 凭据到登录 API
+activate M
+
+M -> B: 2. consumeRateLimit:key 递减窗口额度
+
+B --> M: 3. allowed / retryAfterSec / count
+
+alt 窗口已满（拒绝）
+
+M --> G: 4a. 429 + Retry-After + 可选写入 Brute-force 审计记录
+
+else 窗口允许放行
+
+M -> L: 4b. 透传原 POST 载荷
+
+activate L
+
+L --> G: 5. JSON 成败（口令校验）
+
+deactivate L
+
+end
+
+deactivate M
+
+@enduml
+
+
+@startuml seq_feature_xss
+skinparam monochrome true
+skinparam shadowing false
+
+title URL-XSS Edge 封堵 · 序号时序（工程实现对齐）
+
+participant "访客" as G
+participant "Edge Middleware\ndecode+regex" as M
+participant "403封堵页 HTML" as F
+
+G -> M: 1. 携带可疑 QueryString / Path
+activate M
+
+M -> M: 2. 多重解码并匹配 XSS 关键字模式
+
+alt 命中恶意片段
+ M -> F: 3a. 组装品牌化 403 页面SEO no-index
+ activate F
+
+ F --> M: 附带 await·审计打点写 security_logs XSS
+
+ deactivate F
+
+ M --> G: 4a. Cache-Control:no-store HTTP403 HTML
+
+else 未命中
+
+ M --> G: 3b. 继续 Next / API 链路
+
+end
+
+deactivate M
+@enduml
+
+
+@startuml seq_feature_audit
+skinparam monochrome true
+skinparam shadowing false
+
+title SOC 共通订阅链路 · security_logs INSERT → Realtime · 对齐四模块落库后续
+
+participant "四类安全派发点\n(edge/api)" as W
+participant "security_logs\nPostgreSQL" as T
+participant "Realtime\npublication" as R
+participant "SOC仪表盘\nStatusDashboard" as D
+
+W -> T: 1. INSERT结构化审计列（载荷截断/IP/严重程度…）
+activate W
+activate T
+
+T --> W: 2. 确认插入或错误日志
+
+deactivate T
+
+T -> R: 3. replication 广播 INSERT 事件
+
+R --> D: 4. client subscribe postgres_changes
+activate R
+activate D
+
+D -> D: 5. 状态Hook刷新计数与最近 attack_type
+
+deactivate D
+deactivate R
+deactivate W
+
+note bottom of W
+四模块任一成功 insert 皆可触发本条链路；Middleware 写入须 await 防 Edge 冻结丢审计。
+end note
+
+@enduml
+
+
+@startuml seq_feature_auth_password
+skinparam monochrome true
+skinparam shadowing false
+
+title 安全模块 3 · 口令托管与认证失败审计 · 序号时序（对齐 login/route）
+
+participant "浏览器" as B
+participant "登录POST\n/api/auth/login" as L
+participant "Zod闸门\n邮箱口令形" as Z
+participant "Supabase Auth\nGoTrue会话" as A
+participant "security_logs" as T
+
+B -> L: 1. POST JSON(email,password)
+activate L
+
+L -> Z: 2. safeParse邮箱规范化与口令长度下限
+activate Z
+Z --> L: 3. issues则422且不触达口令比对
+deactivate Z
+
+L -> A: 4. signInWithPassword · 口令摘要比对（服务端托管 bcrypt 语义）
+activate A
+A --> L: 5. 返回会话user或INVALID错误对象
+deactivate A
+
+alt 口令错误或缺少user会话
+
+ L -> T: 6a. insert Auth Failure·掩码邮箱·api防御层·denied
+ activate T
+
+ T --> L: ACK
+ deactivate T
+
+ L --> B: 7a. HTTP401 JSON INVALID_CREDENTIALS
+
+else 认证成功
+
+ L --> B: 6b. attachAuthCookies→200最小user投影
+
+end
+
+deactivate L
+
+@enduml
+
+
+@startuml seq_feature_schema_zod
+skinparam monochrome true
+skinparam shadowing false
+
+title 安全模块 4 · Zod契约拒绝链 · Schema Validation 审计（对齐 api-handler）
+
+participant "浏览器" as B
+participant "REST入口\ncreateApiHandler" as G
+participant "Zod\nsafeParse投影" as Z
+participant "recordSchema\nValidationAudit" as R
+participant "PostgreSQL\nsecurity_logs" as T
+
+B -> G: 1. POST JSON未知结构业务载荷
+activate G
+
+G -> Z: 2. Schema解析与精炼规则(safeText等)
+activate Z
+
+Z --> G: 3. success分支data或failure issues数组
+
+alt 契约失败分支
+
+ G -> R: 4a. await记录pathname+第一条issue概要
+ activate R
+
+ R -> T: INSERT event_type Schema Validation...
+ activate T
+
+ T --> R: ACK
+ deactivate T
+
+ R --> G
+ deactivate R
+
+ G --> B: 5a. 422 VALIDATION_FAILED + issues明文脱敏粒度受控
+
+else 契约成功
+
+ G --> B: (后续进入业务handler本图略)
+
+end
+
+deactivate Z
+deactivate G
+
+@enduml
+

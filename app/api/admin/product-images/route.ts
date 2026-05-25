@@ -14,8 +14,12 @@ const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".
 type ProductImagesMap = Record<string, string>;
 
 async function readProductImages(): Promise<ProductImagesMap> {
-  const raw = await fs.readFile(PRODUCT_IMAGES_PATH, "utf8");
-  return JSON.parse(raw) as ProductImagesMap;
+  try {
+    const raw = await fs.readFile(PRODUCT_IMAGES_PATH, "utf8");
+    return JSON.parse(raw) as ProductImagesMap;
+  } catch {
+    return {};
+  }
 }
 
 async function writeProductImages(data: ProductImagesMap) {

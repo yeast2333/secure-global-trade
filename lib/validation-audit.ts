@@ -33,14 +33,11 @@ export async function recordSchemaValidationAudit(
   try {
     const supabase = await createSupabaseServerClient();
     const { error } = await supabase.from("security_logs").insert({
-      event_type: "Schema Validation",
-      attack_type: "Zod schema rejection (injection / type confusion)",
+      attack_type: "schema_validation_failed",
       payload: `${pathname} · ${first.path}: ${first.code}`.slice(0, 500),
-      source_ip: getSourceIp(request),
+      client_ip: getSourceIp(request),
+      action_taken: "blocked",
       severity: "low",
-      defense_level: "api",
-      matched_rule: first.path || "zod",
-      verdict: "blocked",
     });
     if (error) {
       console.warn("[audit] schema validation log skipped", error.message);

@@ -1,0 +1,27 @@
+%% 图 5-2 Chen 范式 E-R 示意（中文实体/联系/基数）
+%% 渲染： https://mermaid.live 导出 PNG/SVG（建议 TB 自上而下便于对照参考图）
+
+flowchart TB
+  userEnt[用户]
+  prodEnt[商品]
+  ordEnt[订单]
+  lineEnt[订单明细]
+  secEnt[安全日志]
+
+  relSubmit{提交订单}
+  relSplit{拆分明细}
+  relSKU{订购商品}
+
+  secRel{触发记录}
+
+  userEnt ---|1| relSubmit
+  relSubmit ---|n| ordEnt
+
+  ordEnt ---|1| relSplit
+  relSplit ---|n| lineEnt
+
+  lineEnt ---|n| relSKU
+  relSKU ---|1| prodEnt
+
+  secEnt ---|n| secRel
+  secRel ---|0..1可空匿名| userEnt

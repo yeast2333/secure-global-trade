@@ -1,0 +1,27 @@
+%%{init: {'theme': 'neutral', 'themeVariables': { 'fontFamily': 'Microsoft YaHei, SimSun, sans-serif' }}}%%
+---
+title: 图 3-1 附 · 与安全相关的用例在系统中的位置（概念示意 · 可选）
+desc: Word 插图：粘贴到 https://mermaid.live 导出 SVG/PNG（建议 150% ~ 200% 缩放后导出 PNG）
+---
+
+flowchart TB
+  subgraph actors["参与者"]
+    G["访客"]
+    R["注册用户"]
+  end
+
+  subgraph sys[["系统边界 · Secure Global Trade"]]
+    direction TB
+    shop["购销与目录\nUC-01〜05"]
+    auth["帐号与会话\nUC-06〜07"]
+    order["订单与结算\nUC-08〜09"]
+    sec["安全中心与演练\nUC-10〜11"]
+  end
+
+  G --> shop
+  G --> auth
+  R --> shop
+  R --> auth
+  R --> order
+  G --> sec
+  R --> sec

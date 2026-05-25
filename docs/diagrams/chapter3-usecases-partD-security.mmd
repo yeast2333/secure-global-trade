@@ -1,0 +1,16 @@
+%% 图 3-1-d 安全中心与限速演示（UC-10、UC-11）
+
+%%{init: {'flowchart': {'htmlLabels': true}, 'theme': 'neutral'}}%%
+flowchart LR
+  subgraph A["参与者"]
+    G((访客))
+    R((注册用户))
+  end
+  subgraph S["系统边界 · 安全态势与演练"]
+    UC10(["UC-10 访问安全中心"])
+    UC11(["UC-11 触发速率限制演示"])
+  end
+  G --> UC10
+  G --> UC11
+  R --> UC10
+  R --> UC11

@@ -1,0 +1,58 @@
+%% 核心实体 UML（Mermaid）— 对齐 secure-global-trade 代码语义
+%% User：Supabase Auth；Product：lib/products.ts；Order+明细：checkout + profile；
+%% SecurityLog：public.security_logs。持久化明细写入 orders.items（JSON）。
+
+classDiagram
+  direction LR
+
+  class User as "认证用户(User)" {
+    <<Supabase 会话>>
+    +UUID id
+    +电子邮箱
+    +元数据(metadata)
+    +signOut()
+    +从JWT派生会话，禁止前台伪造归属
+  }
+
+  class Product as "商品(Product)" {
+    <<catalog>>
+    +商品编号(id)
+    +名称 · 类目
+    +现价 priceUsd · 划线价可选
+    +库存 batchNo · 描述…
+    +折扣展示计算(helper)
+  }
+
+  class Order as "订单(Order)" {
+    <<orders 业务>>
+    +订单号 id
+    +用户外键(user_id←会话)
+    +应付合计 totalUsd
+    +状态(status)
+    +下单时刻
+    +提交结账持久化(API+Zod)
+    +服务端重算总额()
+  }
+
+  class OrderLine as "订单明细行(嵌于items)" {
+    <<结账 items[]>>
+    +商品编号(id)
+    +名称 name
+    +单价 priceUsd
+    +件数 quantity
+    +作为快照入账，防客户端篡改小数
+  }
+
+  class SecurityLog as "安全审计(SecurityLog)" {
+    <<security_logs>>
+    +编号 · 写入时刻
+    +事件类型 · 攻击类型
+    +举证载荷(payload)
+    +来源IP(可空)·严重度·防御层·命中规则(可空)
+    +处置结论(verdict)
+    +middleware/路由层参数化入库()
+  }
+
+  User "1" o-- "*" Order : "聚合 · 一单属主"
+  Order "1" *-- "*" OrderLine : "组合 · 行随单落库"
+  OrderLine "*" ..> "1" Product : "引用目录项编号"

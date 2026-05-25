@@ -1,0 +1,11 @@
+%% 图 3-1-c 订单用例（UC-08、UC-09）
+
+%%{init: {'flowchart': {'htmlLabels': true}, 'theme': 'neutral'}}%%
+flowchart LR
+  R((注册用户))
+  subgraph S["系统边界 · 订单"]
+    UC08(["UC-08 查看个人订单"])
+    UC09(["UC-09 结账生成订单"])
+  end
+  R --> UC08
+  R --> UC09

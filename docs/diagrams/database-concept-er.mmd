@@ -1,0 +1,48 @@
+%% 概念 E-R｜中文为主｜紧凑型（语义同 init.sql）
+%% 「明细」为规范分解；物理实现由 orders.items(jsonb) 折叠，无单独明细表。
+%% security_logs 与 users 当前无 FK。
+
+erDiagram
+  USER as "用户「auth.users」" {
+    uuid 编号 PK
+    varchar 邮箱 UK
+    varchar 口令密文
+    timestamptz 注册时间
+  }
+
+  PRODUCT as "商品「products」" {
+    text 编号 PK
+    varchar 名称
+    varchar 类目
+    numeric 现价
+    int 库存
+  }
+
+  ORDER as "订单「orders」" {
+    uuid 编号 PK
+    uuid 用户编号 FK
+    numeric 应付总额
+    varchar 订单状态
+    timestamptz 下单时间
+  }
+
+  OL as "订单明细(概念)" {
+    uuid 订单编号 FK
+    text 商品编号 FK
+    int 数量
+    numeric 单价快照
+  }
+
+  LOG as "安全日志" {
+    uuid 编号 PK
+    timestamptz 时刻
+    varchar 事件类
+    varchar 攻击类
+    text 载荷摘录
+    varchar 严重级别
+    varchar 结论
+  }
+
+  USER ||--o{ ORDER : "拥有"
+  ORDER ||--|{ OL : "拆行"
+  PRODUCT ||--o{ OL : "指向"
