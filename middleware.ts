@@ -8,7 +8,7 @@ import { LOGIN_RATE_LIMIT, consumeRateLimit } from "./lib/rate-limit";
 const intlMiddleware = createMiddleware(routing);
 
 // 受保护路由：未登录访问会被重定向到登录页
-const PROTECTED_PATHS = ["/profile"];
+const PROTECTED_PATHS = ["/profile", "/admin"];
 
 // 安全模块 1：XSS 关键字识别（多重 decode 后再匹配，防止 %3Cscript%3E 绕过）
 const XSS_KEYWORDS =

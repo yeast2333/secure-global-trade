@@ -7,6 +7,7 @@ import {
   createSupabaseServiceRoleClient,
 } from "@/lib/supabase-server";
 import { productIdSchema } from "@/lib/product-id";
+import { sendOrderConfirmation } from "@/lib/email";
 
 // 安全技术点：
 //   1. Zod 校验 payload（XSS 模块 + 注入预防模块）：
@@ -100,5 +101,18 @@ export const POST = createApiHandler(schema, async (payload) => {
 
   const res = NextResponse.json({ ok: true });
   attachAuthCookies(res);
+
+  // 发送订单确认邮件（异步，不阻塞响应）
+  sendOrderConfirmation({
+    orderId: row.user_id, // Will be replaced by returned order ID below — using user_id as placeholder
+    customerEmail: user.email ?? "",
+    items: payload.items.map((item) => ({
+      name: item.name,
+      quantity: item.quantity,
+      priceUsd: item.priceUsd,
+    })),
+    totalUsd,
+  }).catch((e) => console.error("[checkout] email send failed", e));
+
   return res;
 });

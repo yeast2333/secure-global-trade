@@ -171,7 +171,7 @@ export default function Navbar({ locale }: { locale: Locale }) {
         <div className="ml-auto flex items-center gap-1">
           <div className="hidden items-center gap-1 sm:flex">
             <Link
-              href="/admin/products"
+              href="/admin"
               className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-cyan-700 hover:bg-cyan-50"
             >
               <ShieldCheck size={12} />
@@ -341,7 +341,7 @@ export default function Navbar({ locale }: { locale: Locale }) {
             </li>
             <li className="mt-2 flex items-center gap-2 px-3">
               <Link
-                href="/admin/products"
+                href="/admin"
                 onClick={() => setMobileOpen(false)}
                 className="rounded-full border border-cyan-200 px-3 py-1 text-xs font-semibold text-cyan-700"
               >

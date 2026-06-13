@@ -231,5 +231,124 @@
       "totals": "Total events captured",
       "live": "Live · subscribed to security_logs"
     }
+  },
+  "admin": {
+    "title": "Admin Console",
+    "nav": {
+      "dashboard": "Dashboard",
+      "products": "Products",
+      "orders": "Orders",
+      "users": "Users",
+      "securityLogs": "Security Logs",
+      "settings": "Settings"
+    },
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "subtitle": "Overview of your store",
+      "quickActions": "Quick actions",
+      "addProduct": "Add new product",
+      "viewOrders": "View all orders",
+      "viewSecurityLogs": "View security logs"
+    },
+    "products": {
+      "title": "Product Management",
+      "list": {
+        "createNew": "Create Product",
+        "search": "Search products...",
+        "filterCategory": "All Categories",
+        "id": "ID",
+        "name": "Name",
+        "category": "Category",
+        "price": "Price",
+        "stock": "Stock",
+        "actions": "Actions",
+        "edit": "Edit",
+        "delete": "Delete",
+        "confirmDelete": "Delete {name}?",
+        "empty": "No products found",
+        "image": "Image"
+      },
+      "form": {
+        "createTitle": "New Product",
+        "editTitle": "Edit {name}",
+        "save": "Save",
+        "cancel": "Cancel",
+        "id": "Product ID",
+        "name": "Product Name",
+        "category": "Category",
+        "priceUsd": "Price (USD)",
+        "priceUsdOriginal": "Original Price (USD)",
+        "stock": "Stock",
+        "batchNo": "Batch Number",
+        "description": "Description",
+        "imageUrl": "Image URL",
+        "createSuccess": "Product created",
+        "updateSuccess": "Product updated",
+        "deleteSuccess": "Product deleted"
+      }
+    },
+    "orders": {
+      "title": "Order Management",
+      "search": "Search orders...",
+      "filterStatus": "All Statuses",
+      "filterDate": "Date range",
+      "id": "Order ID",
+      "customer": "Customer",
+      "items": "Items",
+      "total": "Total",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions",
+      "detail": "Order Detail",
+      "statusHistory": "Status History",
+      "updateStatus": "Update Status",
+      "statusUpdated": "Order status updated",
+      "noOrders": "No orders found",
+      "statuses": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled",
+        "refunded": "Refunded"
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "search": "Search users...",
+      "email": "Email",
+      "admin": "Admin",
+      "registeredAt": "Registered",
+      "actions": "Actions",
+      "makeAdmin": "Set as admin",
+      "removeAdmin": "Remove admin",
+      "adminUpdated": "User role updated",
+      "noUsers": "No users found",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "securityLogs": {
+      "title": "Security Logs",
+      "filterType": "All Types",
+      "filterSeverity": "All Severities",
+      "time": "Time",
+      "type": "Attack Type",
+      "ip": "Source IP",
+      "payload": "Payload",
+      "severity": "Severity",
+      "verdict": "Verdict",
+      "noLogs": "No security logs found",
+      "live": "Live updates",
+      "pause": "Paused"
+    },
+    "settings": {
+      "title": "Settings",
+      "emailTitle": "Email Configuration",
+      "emailDescription": "Manage email notification settings",
+      "emailStatus": "Status",
+      "testEmail": "Send Test Email",
+      "emailSent": "Test email sent",
+      "notConfigured": "Email service not configured"
+    }
   }
 }
