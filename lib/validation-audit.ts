@@ -1,8 +1,7 @@
-import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase-server";
 
 // 安全模块 4（续）· API 层 Zod 校验失败审计
-//   - 与业务成功路径解耦：异步 insert，不 await，避免 422 响应变慢
-//   - event_type = Schema Validation，供安全看板「注入预防」模块统计拦截次数
+//   - 使用 service_role 写入，绕过 RLS（未认证请求无法通过 INSERT 策略）
 //   - payload 仅记录脱敏后的路径 + 第一条 issue，避免日志灌入用户原始 body
 
 type IssueLite = { path: string; code: string; message: string };
@@ -15,7 +14,6 @@ function getSourceIp(request: Request) {
   );
 }
 
-// Vercel / Serverless：响应返回后 runtime 常立即冻结，未 await 的 insert 往往永不落库。
 export async function recordSchemaValidationAudit(
   request: Request,
   issues: IssueLite[],
@@ -31,7 +29,11 @@ export async function recordSchemaValidationAudit(
   }
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabaseServiceRoleClient();
+    if (!supabase) {
+      console.warn("[audit] schema validation log skipped: missing SERVICE_ROLE_KEY");
+      return;
+    }
     const { error } = await supabase.from("security_logs").insert({
       attack_type: "schema_validation_failed",
       payload: `${pathname} · ${first.path}: ${first.code}`.slice(0, 500),

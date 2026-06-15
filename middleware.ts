@@ -1,5 +1,6 @@
 import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 import { routing } from "./i18n/routing";
 import { createSupabaseMiddlewareClient } from "./lib/supabase-middleware";
@@ -38,8 +39,19 @@ function getSourceIp(request: NextRequest) {
   );
 }
 
-// 审计写入必须在返回响应之前 await 完成：Edge / Serverless 中间件返回后进程可能被冻结，
-// fire-and-forget 的 insert 往往来不及执行 → security_logs 无行 → 安全看板计数恒为 0。
+// Edge 安全审计写入器：
+//   - 使用 service_role key 创建 Supabase 客户端，绕过 RLS 直接写入 security_logs
+//   - 原因：XSS / 暴力破解攻击来自未认证请求，匿名用户无法通过 RLS INSERT 策略
+//   - 必须在返回响应前 await 完成：Edge / Serverless 返回后进程可能被冻结
+function createEdgeServiceRoleClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
+
 async function insertEdgeSecurityAudit(
   request: NextRequest,
   payload: {
@@ -51,7 +63,11 @@ async function insertEdgeSecurityAudit(
   },
 ) {
   try {
-    const { supabase } = createSupabaseMiddlewareClient(request);
+    const supabase = createEdgeServiceRoleClient();
+    if (!supabase) {
+      console.error("[security] audit skipped: missing SERVICE_ROLE_KEY");
+      return;
+    }
     const { error } = await supabase.from("security_logs").insert({
       attack_type: payload.attack_type,
       payload: payload.target_url.slice(0, 500),

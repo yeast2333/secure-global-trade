@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "allow": [
+      "Bash(where python *)",
+      "Bash(pip list *)",
+      "WebSearch",
+      "Bash(npm list *)",
+      "Bash(pandoc --version)",
+      "Bash(python -c ' *)",
+      "Bash(awk *)",
+      "Bash(cygpath *)",
+      "Skill(update-config)",
+      "Skill(fewer-permission-prompts)",
+      "Skill(docx)",
+      "Skill(deep-research)",
+      "Skill(verify)",
+      "Skill(code-review)",
+      "Skill(simplify)",
+      "Skill(review)",
+      "Skill(security-review)",
+      "Skill(loop)",
+      "Skill(run)",
+      "Skill(claude-api)",
+      "Skill(init)",
+      "Skill(design-sync)",
+      "Skill(keybindings-help)",
+      "Skill(pptx)"
+    ]
+  }
+}
